@@ -1,0 +1,25 @@
+func fibonacci(n: int) {
+    # Calculates nth Fibonacci number
+    if (n <= 1) { return n; }
+    else {
+        var a: int = fibonacci(n-1);
+        var b: int = fibonacci(n-2);
+        return a+b;
+    }
+}
+
+func main() {
+    var n: int = -1;
+    while (n <= 0) {
+        n = input("Please give a number greater than zero: ");
+    }
+    var result: int = fibonacci(n);
+
+    var ordinal_suffix: string = "th";
+    if (n == 1) { ordinal_suffix="st"; }
+    else if (n == 2) { ordinal_suffix="nd"; }
+    else if (n == 3) { ordinal_suffix="rd"; }
+
+    print("The ", n, ordinal_suffix, " Fibonacci number is: ", result);
+    return 0;
+}
