@@ -48,7 +48,7 @@
    You can define variables within `()` braces and return an optional function result using `return` keyword.
 
 
-5. You can use a `while()` loop when you want to repeat the same set of instructions many times:
+7. You can use a `while()` loop when you want to repeat the same set of instructions many times:
     ```bash
     while (a != 100) {
         a = a+1;
@@ -56,7 +56,7 @@
     }
     ```
 
-6. It is possible to print a concatenation of the multiple parameters:
+8. It is possible to print a concatenation of the multiple parameters:
     ```bash
     var a: string = "hundred";
     var b: int = 100;
@@ -64,7 +64,7 @@
     print("You can put even a ", a, "(", b, ") parameters here!");
     ```
 
-7. Users can be made to input some value into the running program:
+9. Users can be made to input some value into the running program:
     ```bash
     var user_input: str = input("Please type something: ");
     ```
