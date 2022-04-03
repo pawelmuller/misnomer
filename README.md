@@ -8,6 +8,7 @@
     ```bash
     func main() {
         print("Hello world!");
+        return 0;
     }
     ```
    
@@ -15,6 +16,7 @@
    ```bash
     func main() {
         print("Hello world!"); # Prints hello world on screen
+        return 0;
     }
     ```
 
