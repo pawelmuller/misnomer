@@ -1,0 +1,77 @@
+(* Misnomer grammar *)
+
+program                         = { function_definition } ;
+
+(* Statements *)
+statement_block                 = "{" { variable_initialisation | variable_assignment |
+                                  if_statement | while_statement | return_statement |
+                                  function_call ";" | "break" ";" | "continue" ";" |
+                                  print_function | input_function | statement_block } "}" ;
+if_statement                    = if_keyword "(" logic_expression ")" statement_block [ else_keyword statement_block ] ;
+while_statement                 = while_keyword "(" logic_expression ")" statement_block ;
+return_statement                = return_keyword logic_expression ";" ;
+
+(* Functions *)
+print_function                  = "print" io_function_body ;
+input_function                  = "input" io_function_body ;
+io_function_body                = "(" io_function_argument { "," io_function_argument } ")" ";" ;
+io_function_argument            = string_literal | logic_expression ;
+function_call                   = identifier function_arguments ;
+function_arguments              = "(" [ logic_expression { "," logic_expression } ] ")" ;
+function_definition             = function_keyword identifier function_parameters statement_block ;
+function_parameters             = "(" [ identifier { "," identifier } ] ")" ;
+
+(* Variables *)
+variable_initialisation         = variable_keyword ( numeric_variable_initialisation | string_variable_initialisation ) ;
+string_variable_initialisation  = identifier ":" string_type [ assignment_operator string_literal ] ;
+numeric_variable_initialisation = identifier ":" numeric_types [ assignment_operator numeric_literal ] ;
+variable_assignment             = variable assignment_operator ( string_literal | numeric_literal ) ;
+
+(* Expressions *)
+mathematical_expression         = multiplicative_expression { additive_operator multiplicative_expression } ;
+logic_expression                = and_expression { and_operator and_expression } ;
+relational_expression           = base_logic_expression [ relational_operator base_logic_expression ] ;
+
+(* Expressions helpers *)
+multiplicative_expression       = base_mathematical_expression { multiplicative_operator base_mathematical_expression } ;
+base_mathematical_expression    = [ "-" ] ( value | logic_expression ) ;
+base_logic_expression           = [ unary_operator ] mathematical_expression ;
+and_expression                  = relational_expression { or_operator relational_expression } ;
+
+(* Base structures *)
+value                           = number_literal | variable | function_call ;
+numeric_literal                 = digit { digit } ;
+string_literal                  = '"' , { all_characters − '"' } , '"' ;
+variable                        = identifier ;
+identifier                      = letter { digit | letter } ;
+
+(* Operators *)
+assignment_operator             = "=" ;
+and_operator                    = "and" | "&&" ;
+or_operator                     = "or" | "||" ;
+relational_operator             = "==" | "!=" | ">" | ">=" | "<" | "<=" ;
+unary_operator                  = "not" | "!" ;
+
+(* Arithmetical operators *)
+additive_operator               = "+" | "-" ;
+multiplicative_operator         = "*" | "/" ;
+
+(* Keywords *)
+function_keyword                = "func" ;
+variable_keyword                = "var" ;
+return_keyword                  = "return" ;
+if_keyword                      = "if" ;
+else_keyword                    = "else" ;
+while_keyword                   = "while" ;
+
+(* Types *)
+numeric_types                   = integer_type | float_type ;
+integer_type                    = "int" ;
+float_type                      = "float" ;
+string_type                     = "string" ;
+
+(* Basics *)
+letter                          = "a".."z" | "A".."Z" ;
+digit                           = "0".."9" ;
+whitespace                      = ? white space characters ? ;
+all_characters                  = ? all visible characters ? ;
