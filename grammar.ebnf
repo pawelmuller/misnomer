@@ -12,8 +12,7 @@ while_statement                 = while_keyword "(" logic_expression ")" stateme
 return_statement                = return_keyword logic_expression ";" ;
 
 (* Functions *)
-print_function                  = "print" io_function_body ;
-input_function                  = "input" io_function_body ;
+io_function                     = ( print_keyword | input_keyword ) io_function_body ;
 io_function_body                = "(" io_function_argument { "," io_function_argument } ")" ";" ;
 io_function_argument            = string_literal | logic_expression ;
 function_call                   = identifier function_arguments ;
@@ -63,6 +62,8 @@ return_keyword                  = "return" ;
 if_keyword                      = "if" ;
 else_keyword                    = "else" ;
 while_keyword                   = "while" ;
+print_keyword                   = "print" ;
+input_keyword                   = "input" ;
 
 (* Types *)
 numeric_types                   = integer_type | float_type ;
