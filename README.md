@@ -1,6 +1,36 @@
 # [Misnomer](https://en.wikipedia.org/wiki/Misnomer)
 > a name that does not suit what it refers to, or the use of such a name
 
+## Functional requirements
+- Running Misnomer scripts from text files
+- Local variables
+- Strong and static typing
+- Built-in types: `integer`, `float` and `string`
+- Possibility to write your own functions
+- A `while()` loop
+- A conditional `if` statement
+- Arithmetic operations: addition, subtraction, multiplication, division
+- Logic operations: negation, comparison
+- Error handling
+- Possibility to print output to the terminal
+- Possibility to input some data from the terminal
+
+
+## Non-functional requirements
+- Recursion limit
+
+
+## Error handling
+Misnomer will catch casual errors and stop executing the script with the proper notification.
+
+
+## Running the interpreter
+You will be able to interpret any file written in Misnomer by running:
+```shell
+python misnomer.py path_to_script.mnm
+```
+You will need the Python 3.10 to run the interpretation.
+
 
 ## Exemplary code snippets
 *At the moment the snippets show how the language is supposed to look like in the future.*
