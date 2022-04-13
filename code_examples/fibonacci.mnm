@@ -1,4 +1,4 @@
-func fibonacci(n: int) {
+fibonacci(n: int) returns int {
     # Calculates nth Fibonacci number
     if (n <= 1) { return n; }
     else {
@@ -8,7 +8,7 @@ func fibonacci(n: int) {
     }
 }
 
-func main() {
+main() returns int {
     var n: int = -1;
     while (n <= 0) {
         n = input("Please give a number greater than zero: ");

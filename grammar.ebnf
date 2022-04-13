@@ -3,43 +3,41 @@
 program                         = { function_definition } ;
 
 (* Statements *)
-statement_block                 = "{" { variable_initialisation | variable_assignment |
-                                  if_statement | while_statement | return_statement |
-                                  function_call ";" | "break" ";" | "continue" ";" |
-                                  print_function | input_function | statement_block } "}" ;
-if_statement                    = if_keyword "(" logic_expression ")" statement_block [ else_keyword statement_block ] ;
-while_statement                 = while_keyword "(" logic_expression ")" statement_block ;
-return_statement                = return_keyword logic_expression ";" ;
+statement_block                 = "{" { variable_initialisation | statement | "break" ";" | "continue" ";" } "}" ;
+if_statement                    = if_keyword "(" logic_expression ")" ( statement_block | statement )
+                                  [ else_keyword ( statement_block | statement ) ] ;
+while_statement                 = while_keyword "(" logic_expression ")" ( statement_block | statement ) ;
+return_statement                = return_keyword [ logic_expression ] ";" ;
+statement                       = if_statement | while_statement | return_statement | function_call ";" ;
 
 (* Functions *)
-io_function                     = ( print_keyword | input_keyword ) io_function_body ;
-io_function_body                = "(" io_function_argument { "," io_function_argument } ")" ";" ;
-io_function_argument            = string_literal | logic_expression ;
-function_call                   = identifier function_arguments ;
-function_arguments              = "(" [ logic_expression { "," logic_expression } ] ")" ;
-function_definition             = function_keyword identifier function_parameters statement_block ;
-function_parameters             = "(" [ identifier { "," identifier } ] ")" ;
+function_call                   = identifier "(" function_arguments ")" ;
+function_arguments              = [ logic_expression { "," logic_expression } ] ;
+function_definition             = function_keyword identifier "(" function_parameters ")"
+                                  "returns_keyword" function_types statement_block ;
+function_parameters             = [ function_parameter { "," function_parameter } ] ;
+function_parameter              = identifier ":" types ;
 
 (* Variables *)
 variable_initialisation         = variable_keyword ( numeric_variable_initialisation | string_variable_initialisation ) ;
 string_variable_initialisation  = identifier ":" string_type [ assignment_operator string_literal ] ;
 numeric_variable_initialisation = identifier ":" numeric_types [ assignment_operator numeric_literal ] ;
-variable_assignment             = variable assignment_operator ( string_literal | numeric_literal ) ;
+variable_assignment             = variable assignment_operator expression ;
 
 (* Expressions *)
 mathematical_expression         = multiplicative_expression { additive_operator multiplicative_expression } ;
-logic_expression                = and_expression { and_operator and_expression } ;
-relational_expression           = base_logic_expression [ relational_operator base_logic_expression ] ;
+logic_expression                = and_expression { or_operator and_expression } ;
+relational_expression           = mathematical_expression [ relational_operator mathematical_expression ] ;
+expression                      = numeric_literal | string_literal ;
 
 (* Expressions helpers *)
 multiplicative_expression       = base_mathematical_expression { multiplicative_operator base_mathematical_expression } ;
-base_mathematical_expression    = [ "-" ] ( value | logic_expression ) ;
-base_logic_expression           = [ unary_operator ] mathematical_expression ;
-and_expression                  = relational_expression { or_operator relational_expression } ;
+base_mathematical_expression    = [ "-" | unary_operator ] ( value | "(" logic_expression ")" ) ;
+and_expression                  = relational_expression { and_operator relational_expression } ;
 
 (* Base structures *)
-value                           = number_literal | variable | function_call ;
-numeric_literal                 = digit { digit } ;
+value                           = numeric_literal | string_literal | variable | function_call ;
+numeric_literal                 = ( non_zero_digit { digit } | zero_digit ) { "." digit { digit } } ;
 string_literal                  = '"' , { all_characters − '"' } , '"' ;
 variable                        = identifier ;
 identifier                      = letter { digit | letter } ;
@@ -59,6 +57,7 @@ multiplicative_operator         = "*" | "/" ;
 function_keyword                = "func" ;
 variable_keyword                = "var" ;
 return_keyword                  = "return" ;
+returns_keyword                 = "returns" ;
 if_keyword                      = "if" ;
 else_keyword                    = "else" ;
 while_keyword                   = "while" ;
@@ -66,13 +65,18 @@ print_keyword                   = "print" ;
 input_keyword                   = "input" ;
 
 (* Types *)
+types                           = integer_type | float_type | string_type ;
+function_types                  = types | nothing_type ;
 numeric_types                   = integer_type | float_type ;
 integer_type                    = "int" ;
 float_type                      = "float" ;
 string_type                     = "string" ;
+nothing_type                    = "nothing" ;
 
 (* Basics *)
 letter                          = "a".."z" | "A".."Z" ;
-digit                           = "0".."9" ;
+digit                           = zero_digit | non_zero_digit ;
+non_zero_digit                  = "1".."9" ;
+zero_digit                      = "0" ;
 whitespace                      = ? white space characters ? ;
 all_characters                  = ? all visible characters ? ;
