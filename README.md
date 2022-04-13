@@ -6,7 +6,7 @@
 - Local variables
 - Strong and static typing
 - Built-in types: `integer`, `float` and `string`
-- Possibility to write your own functions
+- Possibility to write your functions
 - A `while()` loop
 - A conditional `if` statement
 - Arithmetic operations: addition, subtraction, multiplication, division
@@ -18,6 +18,18 @@
 
 ## Non-functional requirements
 - Recursion limit
+- Call arguments are copied, not referenced
+- Interpreted by Python
+
+
+## Requirements analysis
+Since it ought to be possible to run Misnomer scripts from text files, there is a need to specify their path easily.
+Therefore, it must not be hardcoded into the interpreter but instead given a run parameter.
+Additionally, the recursion limit should be changeable,
+so I will add a run flag to allow the user to set a non-default value.
+Because the interpreter will be written in Python, the integer will derive its unlimited precision and the float
+will have precision equal to the C double on your machine.
+
 
 
 ## Error handling
@@ -29,11 +41,11 @@ You will be able to interpret any file written in Misnomer by running:
 ```shell
 python misnomer.py path_to_script.mnm
 ```
-You will need the Python 3.10 to run the interpretation.
+You will need Python 3.10 to run the interpretation.
 
 
 ## Exemplary code snippets
-*At the moment the snippets show how the language is supposed to look like in the future.*
+*At the moment, the snippets show what the language is supposed to look like in the future.*
 1. The program execution starts from the `main()`:
     ```bash
     func main() {
@@ -75,7 +87,7 @@ You will need the Python 3.10 to run the interpretation.
         return a;
     }
     ```
-   You can define variables within `()` braces and return an optional function result using `return` keyword.
+   You can define variables within `()` braces and return an optional function result using the `return` keyword.
 
 
 7. You can use a `while()` loop when you want to repeat the same set of instructions many times:
@@ -98,4 +110,4 @@ You will need the Python 3.10 to run the interpretation.
     ```bash
     var user_input: str = input("Please type something: ");
     ```
-   Input parameters work the same as in the `print()` function.
+   Input parameters work the same as the `print()` function.
