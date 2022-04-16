@@ -1,0 +1,37 @@
+check_pythagoras(a: int, b: int, c: int) returns nothing {
+    if (a*a + b*b > c*c) {
+        print("This is acute triangle.");
+    } else if (a*a + b*b = c*c) {
+        print("This is right triangle.");
+    } else if (a*a + b*b < c*c) {
+        print("This is obtuse triangle.");
+    }
+}
+
+what_triangle(a: int, b: int, c: int) returns nothing {
+    if (a + b > c) {
+        check_pythagoras(a, b, c);
+    } else if (a + c > b) {
+        check_pythagoras(a, c, b);
+    } else if (b + c > a) {
+        check_pythagoras(b, c, a);
+    } else {
+        print("A triangle with given arm lengths cannot be constructed.");
+    }
+}
+
+main() returns int {
+    var a: int;
+    var b: int;
+    var c: int;
+
+    while (a <= 0 or b <= 0 or c <= 0) {
+        print("Please give lengths for each triangle arm:\n");
+        a = input("a: ");
+        b = input("b: ");
+        c = input("c: ");
+    }
+    what_triangle(a, b, c);
+
+    return 0;
+}
