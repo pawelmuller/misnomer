@@ -28,7 +28,8 @@ Therefore, it must not be hardcoded into the interpreter but instead given a run
 Additionally, the recursion limit should be changeable,
 so I will add a run flag to allow the user to set a non-default value.
 Because the interpreter will be written in Python, the integer will derive its unlimited precision and the float
-will have precision equal to the C double on your machine.
+will have precision equal to the C double on your machine. For the same reason,
+the recursion limit will default to 1000. 
 
 
 
