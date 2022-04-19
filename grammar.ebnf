@@ -13,7 +13,7 @@ statement                       = if_statement | while_statement | return_statem
 (* Functions *)
 function_call                   = identifier "(" function_arguments ")" ;
 function_arguments              = [ logic_expression { "," logic_expression } ] ;
-function_definition             = function_keyword identifier "(" function_parameters ")"
+function_definition             = identifier "(" function_parameters ")"
                                   "returns_keyword" function_types statement_block ;
 function_parameters             = [ function_parameter { "," function_parameter } ] ;
 function_parameter              = identifier ":" types ;
@@ -54,15 +54,12 @@ additive_operator               = "+" | "-" ;
 multiplicative_operator         = "*" | "/" ;
 
 (* Keywords *)
-function_keyword                = "func" ;
 variable_keyword                = "var" ;
 return_keyword                  = "return" ;
 returns_keyword                 = "returns" ;
 if_keyword                      = "if" ;
 else_keyword                    = "else" ;
 while_keyword                   = "while" ;
-print_keyword                   = "print" ;
-input_keyword                   = "input" ;
 
 (* Types *)
 types                           = integer_type | float_type | string_type ;
