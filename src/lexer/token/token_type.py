@@ -3,13 +3,24 @@ from enum import Enum, auto
 
 class TokenType(Enum):
     # Statements
-    IF = auto()
-    ELSE = auto()
-    WHILE = auto()
-    RETURN = auto()
+    IF = auto()                 # if
+    ELSE = auto()               # else
+    WHILE = auto()              # while
+    RETURN = auto()             # return
+    RETURNS = auto()            # returns
+    VAR = auto()                # var
+
+    # Identifier
+    IDENTIFIER = auto()
+
+    # Types
+    INT = auto()                # int
+    FLOAT = auto()              # float
+    STRING = auto()             # string
+    NOTHING = auto()            # nothing
 
     # Base operators
-    ASSIGNMENT = auto()
+    ASSIGNMENT = auto()         # =
 
     AND = auto()                # and or &&
     OR = auto()                 # or or ||
@@ -24,7 +35,23 @@ class TokenType(Enum):
     NOT = auto()                # not or !
 
     # Mathematical
-    PLUS = auto()               # +
-    MINUS = auto()              # -
+    ADD = auto()                # +
+    SUBTRACT = auto()           # -
     MULTIPLY = auto()           # *
     DIVIDE = auto()             # /
+
+    # Special characters
+    ROUND_BRACKET_L = auto()    # (
+    ROUND_BRACKET_R = auto()    # )
+    CURLY_BRACKET_L = auto()    # {
+    CURLY_BRACKET_R = auto()    # }
+    DOT = auto()                # .
+    COMA = auto()               # ,
+    COLON = auto()              # :
+    SEMICOLON = auto()          # ;
+    DOUBLE_QUOTES = auto()      # "
+
+    # Remaining
+    UNKNOWN = auto()
+
+
