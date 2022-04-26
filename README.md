@@ -20,6 +20,7 @@
 - Recursion limit
 - Call arguments are copied, not referenced
 - Interpreted by Python
+- Lexer should escape special characters in strings and translate different line endings correctly
 
 
 ## Requirements analysis
@@ -27,9 +28,14 @@ Since it ought to be possible to run Misnomer scripts from text files, there is 
 Therefore, it must not be hardcoded into the interpreter but instead given a run parameter.
 Additionally, the recursion limit should be changeable,
 so I will add a run flag to allow the user to set a non-default value.
-Because the interpreter will be written in Python, the integer will derive its unlimited precision and the float
-will have precision equal to the C double on your machine. For the same reason,
-the recursion limit will default to 1000. 
+
+Because the interpreter will be written in Python:
+- the integer will derive its unlimited precision and the float
+will have precision equal to the C double on your machine
+- the recursion limit will default to 1000 
+- source code reader class will not handle line endings explicitly, since it's provided by
+[`io.TextIOWrapper`](https://docs.python.org/3.10/library/io.html?highlight=textiowrapper#io.TextIOWrapper)
+
 
 
 
@@ -44,6 +50,11 @@ python misnomer.py path_to_script.mnm
 ```
 You will need Python 3.10 to run the interpretation.
 
+### Optional arguments
+It is possible to run the interpreter with different settings. At the moment you can specify your own recursion limit:
+```shell
+python misnomer.py path_to_script.mnm --recursion_limit 30
+```
 
 ## Exemplary code snippets
 *At the moment, the snippets show what the language is supposed to look like in the future.*
