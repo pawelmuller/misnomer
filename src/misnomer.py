@@ -1,7 +1,9 @@
 import argparse
 
+from lexer.token.token_type import TokenType
+from src.lexer.lexer import Lexer
 from utils.exceptions import MisnomerException
-from utils.source import SourceReader
+from utils.source_reader import SourceReader
 
 
 def obtain_run_arguments():
@@ -16,9 +18,20 @@ def obtain_run_arguments():
 def main():
     try:
         args = obtain_run_arguments()
-        source = SourceReader(args.path)
+        with SourceReader(args.path) as source:
+            lexer = Lexer(source)
+
+            # Temporary solution:
+            tokens = []
+            token = lexer.get_next_token()
+            tokens.append(token)
+            while token._type != TokenType.EOF:
+                token = lexer.get_next_token()
+                tokens.append(token)
+
     except MisnomerException as error:
         print(error)
+    return
 
 
 if __name__ == "__main__":
