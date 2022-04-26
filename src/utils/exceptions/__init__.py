@@ -1,4 +1,5 @@
-from exceptions import (
+from utils.exceptions.exceptions import (
     MisnomerException,
-    ExecutiveNotFoundError
+    MisnomerExecutiveNotFoundError,
+    MisnomerEncodingError
 )
