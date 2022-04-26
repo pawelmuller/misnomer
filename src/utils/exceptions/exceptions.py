@@ -7,7 +7,7 @@ class MisnomerException(Exception):
         super(MisnomerException, self).__init__(self.message)
 
 
-class MisnomerExecutiveNotFoundError(MisnomerException):
+class MisnomerExecutiveNotFoundError(MisnomerException, FileNotFoundError):
     def __init__(self, path: str):
         self.message = f"File '{path}' with the executive could not be found."
         super(MisnomerExecutiveNotFoundError, self).__init__(self.message)

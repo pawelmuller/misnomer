@@ -32,6 +32,7 @@ main() returns int {
         c = input("c: ");
     }
     what_triangle(a, b, c);
+    what_triangle(1.7, 10, 10000);
 
     return 0;
 }

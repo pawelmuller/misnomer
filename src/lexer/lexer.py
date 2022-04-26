@@ -1,3 +1,5 @@
+from copy import copy
+
 from lexer.dictionaries import ESCAPE_CHARACTERS, ONE_SIGN_TOKENS, DOUBLE_SIGN_TOKENS, DOUBLE_SIGN_TOKENS_PREFIXES, \
     KEYWORD_TOKENS, EOF, BACKSLASH
 from lexer.lexer_exceptions import MisnomerLexerException, MisnomerLexerUnterminatedStringException
@@ -62,11 +64,13 @@ class Lexer:
             buffer += self._current_character
             if alternative_token_type := DOUBLE_SIGN_TOKENS.get(buffer):
                 self.get_next_character()
-                return Token(None, self._position, alternative_token_type)
+                return Token(None, copy(self._position), alternative_token_type)
+            else:
+                return Token(None, copy(self._position), token_type)
         else:
             if token_type:
                 self.get_next_character()
-                return Token(None, self._position, token_type)
+                return Token(None, copy(self._position), token_type)
 
     def build_string(self):
         used_quote_sign = self._current_character
@@ -125,7 +129,7 @@ class Lexer:
                     message = f"Failed building a number: expected a digit after '.' got {self._current_character} instead."
                     raise MisnomerLexerException(self._position, message)
 
-            return Token(value, self._position, TokenType.NUMERIC_LITERAL)
+            return Token(value, copy(self._position), TokenType.NUMERIC_LITERAL)
 
     def get_identifier_or_keyword(self):
         if self._current_character.isalpha():
@@ -140,15 +144,15 @@ class Lexer:
             else:
                 token_type = TokenType.IDENTIFIER
 
-            return Token(name, self._position, token_type)
+            return Token(name, copy(self._position), token_type)
 
     def get_end_of_file_token(self):
         if self._current_character == EOF:
-            token = Token(None, self._position, TokenType.EOF)
+            token = Token(None, copy(self._position), TokenType.EOF)
             self.get_next_character()
             return token
 
     def get_unknown_token(self):
-        token = Token(self._current_character, self._position, TokenType.UNKNOWN)
+        token = Token(self._current_character, copy(self._position), TokenType.UNKNOWN)
         self.get_next_character()
         return token

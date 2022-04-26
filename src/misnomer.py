@@ -16,19 +16,18 @@ def obtain_run_arguments():
 
 
 def main():
+    i = 0
     try:
         args = obtain_run_arguments()
         with SourceReader(args.path) as source:
             lexer = Lexer(source)
-
-            # Temporary solution:
             tokens = []
             token = lexer.get_next_token()
             tokens.append(token)
             while token._type != TokenType.EOF:
                 token = lexer.get_next_token()
                 tokens.append(token)
-
+        pass
     except MisnomerException as error:
         print(error)
     return

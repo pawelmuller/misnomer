@@ -1,5 +1,6 @@
 from io import TextIOWrapper
 
+from lexer.dictionaries import EOF
 from utils.exceptions.exceptions import MisnomerExecutiveNotFoundError, MisnomerEncodingError
 from utils.position import Position
 
@@ -30,7 +31,7 @@ class SourceReader:
             raise MisnomerEncodingError(error)
 
     def get_next_character(self) -> str:
-        character = self._code[self._position.character]
+        character = self._code[self._position.character] if self._position.character < len(self._code) else EOF
         if character == SourceReader._END_OF_LINE:
             self._position.line += 1
             self._position.column = 0
