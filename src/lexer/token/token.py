@@ -1,12 +1,12 @@
-from lexer import TokenType
+from lexer.token.token_type import TokenType
+from utils.position import Position
 
 
 class Token:
-    def __init__(self, value, line: int, column: int, token_type: TokenType):
+    def __init__(self, value, position: Position, token_type: TokenType):
         self._value = value
-        self._line = line
-        self._column = column
+        self._position = position
         self._type = token_type
 
     def __repr__(self):
-        return f"Token {self._type.name} (l: {self._line} c: {self._column}) = {self._value}"
+        return f"Token {self._type.name} ({self._position}) = {self._value}"
