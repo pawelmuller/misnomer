@@ -19,6 +19,10 @@ class TokenType(Enum):
     STRING = auto()             # string
     NOTHING = auto()            # nothing
 
+    # Literals
+    NUMERIC_LITERAL = auto()    # Number
+    STRING_LITERAL = auto()     # "something"
+
     # Base operators
     ASSIGNMENT = auto()         # =
 
@@ -53,5 +57,4 @@ class TokenType(Enum):
 
     # Remaining
     UNKNOWN = auto()
-
-
+    EOF = auto()
