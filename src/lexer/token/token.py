@@ -10,3 +10,6 @@ class Token:
 
     def __repr__(self):
         return f"Token {self._type.name} ({self._position}) = {self._value}"
+
+    def get_type(self):
+        return self._type

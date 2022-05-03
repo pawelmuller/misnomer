@@ -3,12 +3,21 @@ from utils.position import Position
 
 
 class MisnomerLexerException(MisnomerException):
-    def __init__(self, position: Position, message: str = ""):
-        message = f"Exception during scanning at: {position}.\n{message}"
+    def __init__(self, position: Position, message: str = "", give_position=True):
+        if give_position:
+            message = f"Exception during scanning at: {position}.\n{message}"
+        else:
+            message = f"Exception during scanning.\n{message}"
         super(MisnomerLexerException, self).__init__(message)
 
 
 class MisnomerLexerUnterminatedStringException(MisnomerLexerException):
     def __init__(self, position: Position, message: str = ""):
-        message = "The string seems not to be terminated correctly."
-        super(MisnomerLexerUnterminatedStringException, self).__init__(position, message)
+        message = "The string seems to be terminated incorrectly."
+        super(MisnomerLexerUnterminatedStringException, self).__init__(position, message, give_position=False)
+
+
+class MisnomerLexerNumericBuildException(MisnomerLexerException):
+    def __init__(self, position: Position, message: str = ""):
+        message = f"Failed to build a number: {message}"
+        super(MisnomerLexerNumericBuildException, self).__init__(position, message)

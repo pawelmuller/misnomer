@@ -3,7 +3,7 @@ import argparse
 from lexer.token.token_type import TokenType
 from src.lexer.lexer import Lexer
 from utils.exceptions import MisnomerException
-from utils.source_reader import SourceReader
+from utils.source_reader.source_reader import FileSourceReader
 
 
 def obtain_run_arguments():
@@ -16,10 +16,9 @@ def obtain_run_arguments():
 
 
 def main():
-    i = 0
     try:
         args = obtain_run_arguments()
-        with SourceReader(args.path) as source:
+        with FileSourceReader(args.path) as source:
             lexer = Lexer(source)
             tokens = []
             token = lexer.get_next_token()

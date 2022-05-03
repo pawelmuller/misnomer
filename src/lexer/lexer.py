@@ -2,7 +2,8 @@ from copy import copy
 
 from lexer.dictionaries import ESCAPE_CHARACTERS, ONE_SIGN_TOKENS, DOUBLE_SIGN_TOKENS, DOUBLE_SIGN_TOKENS_PREFIXES, \
     KEYWORD_TOKENS, EOF, BACKSLASH
-from lexer.lexer_exceptions import MisnomerLexerException, MisnomerLexerUnterminatedStringException
+from lexer.lexer_exceptions import MisnomerLexerException, MisnomerLexerUnterminatedStringException, \
+    MisnomerLexerNumericBuildException
 from lexer.token.token import Token
 from lexer.token.token_type import TokenType
 from utils.position import Position
@@ -31,7 +32,7 @@ class Lexer:
         """
         Method that skips all whitespaces until it finds non-whitespace character
         """
-        while self._current_character.isspace():
+        while self._current_character.isspace() or self._current_character == "":
             self.get_next_character()
 
     def get_next_token(self):
@@ -58,7 +59,7 @@ class Lexer:
     def get_simple_token(self):
         token_type = ONE_SIGN_TOKENS.get(self._current_character)
 
-        if token_type in DOUBLE_SIGN_TOKENS_PREFIXES:
+        if token_type in DOUBLE_SIGN_TOKENS_PREFIXES or self._current_character in ("|", "&"):
             buffer = self._current_character
             self.get_next_character()
             buffer += self._current_character
@@ -115,8 +116,8 @@ class Lexer:
         if value := self.build_integer():
 
             if value[:2] == '00':
-                message = 'Failed building a number: expected "." but got "0" instead.'
-                raise MisnomerLexerException(self._position, message)
+                message = 'Expected "." but got "0" instead.'
+                raise MisnomerLexerNumericBuildException(self._position, message)
 
             value = int(value)
             if self._current_character == '.':
@@ -126,7 +127,7 @@ class Lexer:
                     fractional_part = int(fractional_part) / (10 ** fractional_part_digits_qty)
                     value += fractional_part
                 else:
-                    message = f"Failed building a number: expected a digit after '.' got {self._current_character} instead."
+                    message = f"Expected a digit after '.' got {self._current_character} instead."
                     raise MisnomerLexerException(self._position, message)
 
             return Token(value, copy(self._position), TokenType.NUMERIC_LITERAL)

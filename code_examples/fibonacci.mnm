@@ -1,5 +1,4 @@
 fibonacci(n: int) returns int {
-    # Calculates nth Fibonacci number
     if (n <= 1) { return n; }
     else {
         var a: int = fibonacci(n-1);

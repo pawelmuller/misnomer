@@ -14,5 +14,6 @@ class MisnomerExecutiveNotFoundError(MisnomerException, FileNotFoundError):
 
 
 class MisnomerEncodingError(MisnomerException, ValueError):
-    def __init__(self, *args, **kwargs):
-        super(MisnomerEncodingError, self).__init__(args, kwargs)
+    def __init__(self, message):
+        self.message = f"You should use UTF-8 encoded text file as a source od the code.\nDetails: {message}"
+        super(MisnomerEncodingError, self).__init__(self.message)

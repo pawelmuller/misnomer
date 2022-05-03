@@ -8,27 +8,9 @@ from utils.position import Position
 class SourceReader:
     _END_OF_LINE = "\n"
 
-    def __init__(self, source_path: str):
-        self._source_path: str = source_path
+    def __init__(self):
+        self._code = None
         self._position = Position()
-        self._source: TextIOWrapper
-        self._code: str
-        self._load_source()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._source.close()
-
-    def _load_source(self):
-        try:
-            self._source = open(self._source_path, "r", encoding="utf-8")
-            self._code = self._source.read()
-        except FileNotFoundError as error:
-            raise MisnomerExecutiveNotFoundError(self._source_path)
-        except ValueError as error:
-            raise MisnomerEncodingError(error)
 
     def get_next_character(self) -> str:
         character = self._code[self._position.character] if self._position.character < len(self._code) else EOF
@@ -43,3 +25,32 @@ class SourceReader:
 
     def get_position(self):
         return self._position
+
+
+class FileSourceReader(SourceReader):
+    def __init__(self, source_path: str):
+        super().__init__()
+        self._source_path: str = source_path
+        self._source: TextIOWrapper
+        self._load_source()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._source.close()
+
+    def _load_source(self):
+        try:
+            self._source = open(self._source_path, "r", encoding="utf-8")
+            self._code = self._source.read()
+        except FileNotFoundError as error:
+            raise MisnomerExecutiveNotFoundError(self._source_path)
+        except ValueError or UnicodeDecodeError as error:
+            raise MisnomerEncodingError(error)
+
+
+class StringSourceReader(SourceReader):
+    def __init__(self, code):
+        super().__init__()
+        self._code = code
