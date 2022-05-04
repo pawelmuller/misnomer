@@ -73,7 +73,7 @@ class Lexer:
 
     def build_string(self):
         used_quote_sign = self._current_character
-        buffer = ""
+        buffer = []
         self.get_next_character()
 
         while self._current_character != used_quote_sign:
@@ -84,17 +84,17 @@ class Lexer:
             elif self._current_character == BACKSLASH:
                 self.get_next_character()
                 if self._current_character == used_quote_sign:
-                    buffer += used_quote_sign
-                elif new_char := ESCAPE_CHARACTERS.get(BACKSLASH + self._current_character):
-                    buffer += new_char
+                    buffer.append(used_quote_sign)
+                elif new_char := ESCAPE_CHARACTERS.get(self._current_character):
+                    buffer.append(new_char)
                 else:
-                    buffer += f"\\{self._current_character}"
+                    raise MisnomerLexerException(self._reader.get_position())
             # Normal sign
             else:
-                buffer += self._current_character
+                buffer.append(self._current_character)
             self.get_next_character()
 
-        return buffer
+        return "".join(buffer)
 
     def get_string_literal(self):
         if self._current_character in QUOTE_CHARACTERS:
@@ -132,11 +132,14 @@ class Lexer:
 
     def get_identifier_or_keyword(self):
         if self._current_character.isalpha():
-            name = ""
+            name = []
 
-            while self._current_character.isalpha() or self._current_character.isdigit() or self._current_character == '_':
-                name += self._current_character
+            while self._current_character.isalpha() or self._current_character.isdecimal()\
+                    or self._current_character == '_':
+                name.append(self._current_character)
                 self.get_next_character()
+
+            name = "".join(name)
 
             if token_type := KEYWORD_TOKENS.get(name):
                 name = None
