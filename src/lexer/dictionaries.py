@@ -34,9 +34,7 @@ DOUBLE_SIGN_TOKENS = {
     "==": TokenType.EQUAL,
     "!=": TokenType.NOT_EQUAL,
     "<=": TokenType.LESS_EQUAL,
-    ">=": TokenType.GREATER_EQUAL,
-    "||": TokenType.OR,
-    "&&": TokenType.AND
+    ">=": TokenType.GREATER_EQUAL
 }
 
 KEYWORD_TOKENS = {

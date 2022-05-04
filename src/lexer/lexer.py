@@ -57,7 +57,7 @@ class Lexer:
     def get_simple_token(self):
         token_type = ONE_SIGN_TOKENS.get(self._current_character)
 
-        if token_type in DOUBLE_SIGN_TOKENS_PREFIXES or self._current_character in ("|", "&"):
+        if token_type in DOUBLE_SIGN_TOKENS_PREFIXES:
             buffer = self._current_character
             self.get_next_character()
             buffer += self._current_character
