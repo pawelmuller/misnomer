@@ -7,32 +7,30 @@ from lexer.lexer_exceptions import MisnomerLexerException, MisnomerLexerUntermin
 from lexer.token.token import Token
 from lexer.token.token_type import TokenType
 from utils.position import Position
-from utils.source_reader import SourceReader
 
 QUOTE_CHARACTERS = ("'", '"')
 
 
 class Lexer:
-    def __init__(self, reader: SourceReader):
-        self._reader: SourceReader = reader
+    def __init__(self, reader):
+        self._reader = reader
         self._current_character: str = ""
+        self.get_next_character()
         self._position = Position()
 
-    def get_next_character(self) -> str:
+    def get_next_character(self):
         """
         Method obtains and returns next character from the source reader.
         :return: string
         """
-        next_character = self._reader.get_next_character()
-        self._current_character = next_character
+        self._current_character = self._reader.get_next_character()
         self._position = self._reader.get_position()
-        return next_character
 
     def omit_whitespaces(self) -> None:
         """
         Method that skips all whitespaces until it finds non-whitespace character
         """
-        while self._current_character.isspace() or self._current_character == "":
+        while self._current_character.isspace():
             self.get_next_character()
 
     def get_next_token(self):
