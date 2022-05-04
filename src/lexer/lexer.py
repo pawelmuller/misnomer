@@ -63,13 +63,13 @@ class Lexer:
             buffer += self._current_character
             if alternative_token_type := DOUBLE_SIGN_TOKENS.get(buffer):
                 self.get_next_character()
-                return Token(None, copy(self._position), alternative_token_type)
+                return Token(None, self._position, alternative_token_type)
             else:
-                return Token(None, copy(self._position), token_type)
+                return Token(None, self._position, token_type)
         else:
             if token_type:
                 self.get_next_character()
-                return Token(None, copy(self._position), token_type)
+                return Token(None, self._position, token_type)
 
     def build_string(self):
         used_quote_sign = self._current_character
