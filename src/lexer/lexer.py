@@ -2,13 +2,14 @@ from copy import copy
 
 from lexer.dictionaries import ESCAPE_CHARACTERS, ONE_SIGN_TOKENS, DOUBLE_SIGN_TOKENS, DOUBLE_SIGN_TOKENS_PREFIXES, \
     KEYWORD_TOKENS, EOF, BACKSLASH
-from lexer.lexer_exceptions import MisnomerLexerException, MisnomerLexerUnterminatedStringException, \
-    MisnomerLexerNumericBuildException
+from lexer.lexer_exceptions import MisnomerLexerUnterminatedStringException, MisnomerLexerNumericBuildException, \
+    MisnomerLexerStringBuildExceededLengthException, MisnomerLexerException
 from lexer.token.token import Token
 from lexer.token.token_type import TokenType
 from utils.position import Position
 
 QUOTE_CHARACTERS = ("'", '"')
+MAX_STRING_LENGTH = 1000
 
 
 class Lexer:
@@ -77,6 +78,10 @@ class Lexer:
         self.get_next_character()
 
         while self._current_character != used_quote_sign:
+            # String length exceeded
+            if len(buffer) >= MAX_STRING_LENGTH:
+                raise MisnomerLexerStringBuildExceededLengthException(self._reader.get_position(),
+                                                                      max_length=MAX_STRING_LENGTH)
             # EOF
             if self._current_character == EOF:
                 raise MisnomerLexerUnterminatedStringException(self._position)

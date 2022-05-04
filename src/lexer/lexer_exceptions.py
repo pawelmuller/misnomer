@@ -17,6 +17,12 @@ class MisnomerLexerUnterminatedStringException(MisnomerLexerException):
         super(MisnomerLexerUnterminatedStringException, self).__init__(position, message, give_position=False)
 
 
+class MisnomerLexerStringBuildExceededLengthException(MisnomerLexerException):
+    def __init__(self, position: Position, max_length: int, message: str = ""):
+        message = f"The string exceeded the maximum length limit ({max_length})."
+        super(MisnomerLexerStringBuildExceededLengthException, self).__init__(position, message, give_position=False)
+
+
 class MisnomerLexerNumericBuildException(MisnomerLexerException):
     def __init__(self, position: Position, message: str = ""):
         message = f"Failed to build a number: {message}"
