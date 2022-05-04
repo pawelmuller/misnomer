@@ -1,3 +1,4 @@
+from copy import copy
 from io import TextIOWrapper
 
 from lexer.dictionaries import EOF
@@ -9,11 +10,9 @@ class SourceReader:
     _END_OF_LINE = "\n"
 
     def __init__(self):
-        self._code = None
         self._position = Position()
 
-    def get_next_character(self) -> str:
-        character = self._code[self._position.character] if self._position.character < len(self._code) else EOF
+    def update_position(self, character: str):
         if character == SourceReader._END_OF_LINE:
             self._position.line += 1
             self._position.column = 0
@@ -21,10 +20,9 @@ class SourceReader:
             self._position.column += 1
 
         self._position.character += 1
-        return character
 
     def get_position(self):
-        return self._position
+        return copy(self._position)
 
 
 class FileSourceReader(SourceReader):
@@ -43,14 +41,23 @@ class FileSourceReader(SourceReader):
     def _load_source(self):
         try:
             self._source = open(self._source_path, "r", encoding="utf-8")
-            self._code = self._source.read()
-        except FileNotFoundError as error:
+        except FileNotFoundError:
             raise MisnomerExecutiveNotFoundError(self._source_path)
         except ValueError or UnicodeDecodeError as error:
             raise MisnomerEncodingError(error)
+
+    def get_next_character(self) -> str:
+        character = self._source.read(1)
+        self.update_position(character)
+        return character
 
 
 class StringSourceReader(SourceReader):
     def __init__(self, code):
         super().__init__()
         self._code = code
+
+    def get_next_character(self) -> str:
+        character = self._code[self._position.character] if self._position.character < len(self._code) else EOF
+        self.update_position(character)
+        return character
