@@ -54,11 +54,11 @@ KEYWORD_TOKENS = {
 }
 
 ESCAPE_CHARACTERS = {
-    "\\n": "\n",        # New line
-    "\\r": "\r",        # Carriage return
-    "\\t": "\t",        # Tab
-    "\\b": "\b",        # Backspace
-    "\\f": "\f",        # Form feed
-    "\\\\": BACKSLASH,  # Backslash
-    "\\0": EOF          # EOF
+    "n": "\n",        # New line
+    "r": "\r",        # Carriage return
+    "t": "\t",        # Tab
+    "b": "\b",        # Backspace
+    "f": "\f",        # Form feed
+    "\\": BACKSLASH,  # Backslash
+    "0": EOF          # EOF
 }

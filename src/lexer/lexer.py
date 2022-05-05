@@ -156,7 +156,6 @@ class Lexer:
     def get_end_of_file_token(self):
         if self._current_character == EOF:
             token = Token(None, copy(self._position), TokenType.EOF)
-            self.get_next_character()
             return token
 
     def get_unknown_token(self):
