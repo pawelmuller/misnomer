@@ -47,9 +47,10 @@ class FileSourceReader(SourceReader):
             raise MisnomerEncodingError(error)
 
     def get_next_character(self) -> str:
-        character = self._source.read(1)
-        self.update_position(character)
-        return character
+        if character := self._source.read(1):
+            self.update_position(character)
+            return character
+        return EOF
 
 
 class StringSourceReader(SourceReader):
