@@ -6,6 +6,7 @@ class Position:
 
     def __repr__(self):
         return f"l: {self.line}, c: {self.column}"
+        # return f"l: {self.line}, c: {self.column}, ch: {self.character}"
 
     def __eq__(self, other):
         if self.line == other.line and self.column == other.column and self.character == other.character:
