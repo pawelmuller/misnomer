@@ -14,24 +14,24 @@ class TestLexerTokenAssignments:
     def test_one_sign_tokens(self):
         tokens = ONE_SIGN_TOKENS.keys()
         for token in tokens:
-            source = StringSourceReader(token)
-            lexer_result = Lexer(source).get_next_token()
+            with StringSourceReader(token) as source:
+                lexer_result = Lexer(source).get_next_token()
 
             assert lexer_result.get_type() == ONE_SIGN_TOKENS.get(token)
 
     def test_double_sign_tokens(self):
         tokens = DOUBLE_SIGN_TOKENS.keys()
         for token in tokens:
-            source = StringSourceReader(token)
-            lexer_result = Lexer(source).get_next_token()
+            with StringSourceReader(token) as source:
+                lexer_result = Lexer(source).get_next_token()
 
             assert lexer_result.get_type() == DOUBLE_SIGN_TOKENS.get(token)
 
     def test_keyword_tokens(self):
         tokens = KEYWORD_TOKENS.keys()
         for token in tokens:
-            source = StringSourceReader(token)
-            lexer_result = Lexer(source).get_next_token()
+            with StringSourceReader(token) as source:
+                lexer_result = Lexer(source).get_next_token()
 
             assert lexer_result.get_type() == KEYWORD_TOKENS.get(token)
 
@@ -60,14 +60,14 @@ class TestLexerTokenAssignments:
                           TokenType.NUMERIC_LITERAL, TokenType.ROUND_BRACKET_R, TokenType.SEMICOLON, TokenType.RETURN,
                           TokenType.IDENTIFIER, TokenType.ADD, TokenType.IDENTIFIER, TokenType.SEMICOLON,
                           TokenType.CURLY_BRACKET_R, TokenType.CURLY_BRACKET_R, TokenType.EOF]
-        source = StringSourceReader(function_code)
 
-        lexer = Lexer(source)
-        tokens = []
-        token = Token(None, Position(), TokenType.UNKNOWN)
-        while token._type != TokenType.EOF:
-            token = lexer.get_next_token()
-            tokens.append(token.get_type())
+        with StringSourceReader(function_code) as source:
+            lexer = Lexer(source)
+            tokens = []
+            token = Token(None, Position(), TokenType.UNKNOWN)
+            while token._type != TokenType.EOF:
+                token = lexer.get_next_token()
+                tokens.append(token.get_type())
 
         assert tokens == correct_tokens
 
@@ -76,64 +76,65 @@ class TestLexerExceptions:
     def test_non_escaped_string(self):
         code = "var a: string = 'Testing unterminated string;"
 
-        source = StringSourceReader(code)
-        lexer = Lexer(source)
-        token = Token(None, Position(), TokenType.UNKNOWN)
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            token = Token(None, Position(), TokenType.UNKNOWN)
 
-        with pytest.raises(MisnomerLexerUnterminatedStringException):
-            while token._type != TokenType.EOF:
-                token = lexer.get_next_token()
+            with pytest.raises(MisnomerLexerUnterminatedStringException):
+                while token._type != TokenType.EOF:
+                    token = lexer.get_next_token()
 
     def test_too_long_string(self):
         code = f"var a: string = '{'s'*1001}'"
-        source = StringSourceReader(code)
-        lexer = Lexer(source)
-        token = Token(None, Position(), TokenType.UNKNOWN)
 
-        with pytest.raises(MisnomerLexerStringBuildExceededLengthException):
-            while token._type != TokenType.EOF:
-                token = lexer.get_next_token()
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            token = Token(None, Position(), TokenType.UNKNOWN)
+
+            with pytest.raises(MisnomerLexerStringBuildExceededLengthException):
+                while token._type != TokenType.EOF:
+                    token = lexer.get_next_token()
 
     def test_double_zero_integer_beginning(self):
         code = "var a: int = 0012"
 
-        source = StringSourceReader(code)
-        lexer = Lexer(source)
-        token = Token(None, Position(), TokenType.UNKNOWN)
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            token = Token(None, Position(), TokenType.UNKNOWN)
 
-        with pytest.raises(MisnomerLexerNumericBuildException):
-            while token._type != TokenType.EOF:
-                token = lexer.get_next_token()
+            with pytest.raises(MisnomerLexerNumericBuildException):
+                while token._type != TokenType.EOF:
+                    token = lexer.get_next_token()
 
     def test_double_zero_float_beginning(self):
         code = "var a: int = 00.12"
 
-        source = StringSourceReader(code)
-        lexer = Lexer(source)
-        token = Token(None, Position(), TokenType.UNKNOWN)
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            token = Token(None, Position(), TokenType.UNKNOWN)
 
-        with pytest.raises(MisnomerLexerNumericBuildException):
-            while token._type != TokenType.EOF:
-                token = lexer.get_next_token()
+            with pytest.raises(MisnomerLexerNumericBuildException):
+                while token._type != TokenType.EOF:
+                    token = lexer.get_next_token()
 
     def test_wrong_char_after_dot(self):
         code = "var a: int = 00.x12"
 
-        source = StringSourceReader(code)
-        lexer = Lexer(source)
-        token = Token(None, Position(), TokenType.UNKNOWN)
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            token = Token(None, Position(), TokenType.UNKNOWN)
 
-        with pytest.raises(MisnomerLexerNumericBuildException):
-            while token._type != TokenType.EOF:
-                token = lexer.get_next_token()
+            with pytest.raises(MisnomerLexerNumericBuildException):
+                while token._type != TokenType.EOF:
+                    token = lexer.get_next_token()
 
     def test_no_char_after_dot(self):
         code = "var a: int = 00."
 
-        source = StringSourceReader(code)
-        lexer = Lexer(source)
-        token = Token(None, Position(), TokenType.UNKNOWN)
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            token = Token(None, Position(), TokenType.UNKNOWN)
 
-        with pytest.raises(MisnomerLexerNumericBuildException):
-            while token._type != TokenType.EOF:
-                token = lexer.get_next_token()
+            with pytest.raises(MisnomerLexerNumericBuildException):
+                while token._type != TokenType.EOF:
+                    token = lexer.get_next_token()
