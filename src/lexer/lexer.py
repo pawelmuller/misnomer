@@ -108,31 +108,38 @@ class Lexer:
             return Token(value, self._position, TokenType.STRING_LITERAL)
 
     def build_integer(self):
-        if self._current_character.isdigit():
-            value = ""
-            while self._current_character.isdigit():
-                value += self._current_character
+        if self._current_character.isdecimal():
+            if self._current_character == "0":
+                return 0
+            value = int(self._current_character)
+            self.get_next_character()
+            while self._current_character.isdecimal():
+                value *= 10
+                value += int(self._current_character)
                 self.get_next_character()
             return value
 
-    def get_number_literal(self):
-        if value := self.build_integer():
-
-            if value[:2] == '00':
-                message = 'Expected "." but got "0" instead.'
-                raise MisnomerLexerNumericBuildException(self._position, message)
-
-            value = int(value)
-            if self._current_character == '.':
+    def build_fraction(self):
+        if self._current_character == ".":
+            self.get_next_character()
+            value = 0
+            fraction_digits_quantity = 0
+            while self._current_character.isdecimal():
+                value *= 10
+                value += int(self._current_character)
+                fraction_digits_quantity += 1
                 self.get_next_character()
-                if fractional_part := self.build_integer():
-                    fractional_part_digits_qty = len(fractional_part)
-                    fractional_part = int(fractional_part) / (10 ** fractional_part_digits_qty)
-                    value += fractional_part
-                else:
-                    message = f"Expected a digit after '.' got {self._current_character} instead."
-                    raise MisnomerLexerException(self._position, message)
+            fractional_part = value / (10 ** fraction_digits_quantity)
+            return fractional_part
+        return None
 
+    def get_number_literal(self):
+        if (value := self.build_integer()) is not None:
+            if (fraction := self.build_fraction()) is not None:
+                value += fraction
+            if self._current_character.isdecimal() or self._current_character == ".":
+                message = f"Unexpected character '{self._current_character}' after number."
+                raise MisnomerLexerNumericBuildException(self._reader.get_position(), message)
             return Token(value, copy(self._position), TokenType.NUMERIC_LITERAL)
 
     def get_identifier_or_keyword(self):
