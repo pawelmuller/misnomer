@@ -13,3 +13,6 @@ class Token:
 
     def get_type(self):
         return self._type
+
+    def get_position(self):
+        return self._position
