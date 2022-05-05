@@ -1,8 +1,13 @@
 class Position:
-    def __init__(self, line=0, column=0, character=0):
+    def __init__(self, line=1, column=1, character=1):
         self.line = line
         self.column = column
         self.character = character
 
     def __repr__(self):
         return f"l: {self.line}, c: {self.column}"
+
+    def __eq__(self, other):
+        if self.line == other.line and self.column == other.column and self.character == other.character:
+            return True
+        return False
