@@ -2,7 +2,8 @@ import pytest
 
 from lexer.dictionaries import ONE_SIGN_TOKENS, DOUBLE_SIGN_TOKENS, KEYWORD_TOKENS
 from lexer.lexer import Lexer
-from lexer.lexer_exceptions import MisnomerLexerUnterminatedStringException, MisnomerLexerNumericBuildException
+from lexer.lexer_exceptions import MisnomerLexerUnterminatedStringException, MisnomerLexerNumericBuildException, \
+    MisnomerLexerStringBuildExceededLengthException
 from lexer.token.token import Token
 from lexer.token.token_type import TokenType
 from utils.position import Position
@@ -83,6 +84,16 @@ class TestLexerExceptions:
             while token._type != TokenType.EOF:
                 token = lexer.get_next_token()
 
+    def test_too_long_string(self):
+        code = f"var a: string = '{'s'*1001}'"
+        source = StringSourceReader(code)
+        lexer = Lexer(source)
+        token = Token(None, Position(), TokenType.UNKNOWN)
+
+        with pytest.raises(MisnomerLexerStringBuildExceededLengthException):
+            while token._type != TokenType.EOF:
+                token = lexer.get_next_token()
+
     def test_double_zero_integer_beginning(self):
         code = "var a: int = 0012"
 
@@ -107,6 +118,17 @@ class TestLexerExceptions:
 
     def test_wrong_char_after_dot(self):
         code = "var a: int = 00.x12"
+
+        source = StringSourceReader(code)
+        lexer = Lexer(source)
+        token = Token(None, Position(), TokenType.UNKNOWN)
+
+        with pytest.raises(MisnomerLexerNumericBuildException):
+            while token._type != TokenType.EOF:
+                token = lexer.get_next_token()
+
+    def test_no_char_after_dot(self):
+        code = "var a: int = 00."
 
         source = StringSourceReader(code)
         lexer = Lexer(source)
