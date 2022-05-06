@@ -12,13 +12,13 @@ class MisnomerLexerException(MisnomerException):
 
 
 class MisnomerLexerUnterminatedStringException(MisnomerLexerException):
-    def __init__(self, position: Position, message: str = ""):
+    def __init__(self, position: Position):
         message = "The string seems to be terminated incorrectly."
         super(MisnomerLexerUnterminatedStringException, self).__init__(position, message, give_position=False)
 
 
 class MisnomerLexerStringBuildExceededLengthException(MisnomerLexerException):
-    def __init__(self, position: Position, max_length: int, message: str = ""):
+    def __init__(self, position: Position, max_length: int):
         message = f"The string exceeded the maximum length limit ({max_length})."
         super(MisnomerLexerStringBuildExceededLengthException, self).__init__(position, message, give_position=False)
 

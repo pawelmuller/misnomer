@@ -16,7 +16,7 @@ what_triangle(a: int, b: int, c: int) returns nothing {
     } else if (b + c > a) {
         check_pythagoras(b, c, a);
     } else {
-        print("A triangle with given arm lengths cannot be constructed.);
+        print("A triangle with given arm lengths cannot be constructed.");
     }
 }
 

@@ -7,16 +7,16 @@ from lexer.lexer_exceptions import MisnomerLexerUnterminatedStringException, Mis
 from lexer.token.token import Token
 from lexer.token.token_type import TokenType
 from utils.position import Position
+from utils.source_reader import SourceReader
 
 QUOTE_CHARACTERS = ("'", '"')
 MAX_STRING_LENGTH = 1000
 
 
 class Lexer:
-    def __init__(self, reader):
+    def __init__(self, reader: SourceReader):
         self._reader = reader
-        self._current_character: str = ""
-        self.get_next_character()
+        self._current_character: str = self._reader.get_first_character()
         self._position = Position()
 
     def get_next_character(self):
@@ -25,7 +25,6 @@ class Lexer:
         :return: string
         """
         self._current_character = self._reader.get_next_character()
-        self._position = self._reader.get_position()
 
     def omit_whitespaces(self) -> None:
         """
@@ -110,6 +109,7 @@ class Lexer:
     def build_integer(self):
         if self._current_character.isdecimal():
             if self._current_character == "0":
+                self.get_next_character()
                 return 0
             value = int(self._current_character)
             self.get_next_character()
