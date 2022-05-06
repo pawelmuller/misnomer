@@ -109,6 +109,7 @@ class Lexer:
     def build_integer(self):
         if self._current_character.isdecimal():
             if self._current_character == "0":
+                self.get_next_character()
                 return 0
             value = int(self._current_character)
             self.get_next_character()
