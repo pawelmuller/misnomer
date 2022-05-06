@@ -71,6 +71,24 @@ class TestLexerTokenAssignments:
 
         assert tokens == correct_tokens
 
+    def test_variable_initialisation(self):
+        code = "var a: int = 0.00000001"
+        correct_tokens = [Token(None, Position(1, 1, 1), TokenType.VAR),
+                          Token("a", Position(1, 5, 5), TokenType.IDENTIFIER),
+                          Token(None, Position(1, 6, 6), TokenType.COLON),
+                          Token(None, Position(1, 8, 8), TokenType.INT),
+                          Token(None, Position(1, 12, 12), TokenType.ASSIGNMENT),
+                          Token(0.00000001, Position(1, 14, 14), TokenType.NUMERIC_LITERAL)]
+        tokens = []
+
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+
+            while (token := lexer.get_next_token()).get_type() != TokenType.EOF:
+                tokens.append(token)
+
+        assert tokens == correct_tokens
+
 
 class TestLexerExceptions:
     def test_non_escaped_string(self):
