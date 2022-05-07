@@ -33,7 +33,7 @@ class Lexer:
         while self._current_character.isspace():
             self.get_next_character()
 
-    def get_next_token(self):
+    def get_next_token(self) -> Token:
         """
         Sth
         :return:
@@ -54,7 +54,7 @@ class Lexer:
 
         return token
 
-    def get_simple_token(self):
+    def get_simple_token(self) -> Token:
         token_type = ONE_SIGN_TOKENS.get(self._current_character)
 
         if token_type in DOUBLE_SIGN_TOKENS_PREFIXES:
@@ -71,7 +71,7 @@ class Lexer:
                 self.get_next_character()
                 return Token(None, self._position, token_type)
 
-    def build_string(self):
+    def build_string(self) -> str:
         used_quote_sign = self._current_character
         buffer = []
         self.get_next_character()
@@ -100,13 +100,13 @@ class Lexer:
 
         return "".join(buffer)
 
-    def get_string_literal(self):
+    def get_string_literal(self) -> Token:
         if self._current_character in QUOTE_CHARACTERS:
             value = self.build_string()
             self.get_next_character()
             return Token(value, self._position, TokenType.STRING_LITERAL)
 
-    def build_integer(self):
+    def build_integer(self) -> int:
         if self._current_character.isdecimal():
             if self._current_character == "0":
                 self.get_next_character()
@@ -119,7 +119,7 @@ class Lexer:
                 self.get_next_character()
             return value
 
-    def build_fraction(self):
+    def build_fraction(self) -> float:
         if self._current_character == ".":
             self.get_next_character()
             value = 0
@@ -131,9 +131,8 @@ class Lexer:
                 self.get_next_character()
             fractional_part = value / (10 ** fraction_digits_quantity)
             return fractional_part
-        return None
 
-    def get_number_literal(self):
+    def get_number_literal(self) -> Token:
         if (value := self.build_integer()) is not None:
             if (fraction := self.build_fraction()) is not None:
                 value += fraction
@@ -142,7 +141,7 @@ class Lexer:
                 raise MisnomerLexerNumericBuildException(self._reader.get_position(), message)
             return Token(value, copy(self._position), TokenType.NUMERIC_LITERAL)
 
-    def get_identifier_or_keyword(self):
+    def get_identifier_or_keyword(self) -> Token:
         if self._current_character.isalpha():
             name = []
 
@@ -160,12 +159,12 @@ class Lexer:
 
             return Token(name, copy(self._position), token_type)
 
-    def get_end_of_file_token(self):
+    def get_end_of_file_token(self) -> Token:
         if self._current_character == EOF:
             token = Token(None, copy(self._position), TokenType.EOF)
             return token
 
-    def get_unknown_token(self):
+    def get_unknown_token(self) -> Token:
         token = Token(self._current_character, copy(self._position), TokenType.UNKNOWN)
         self.get_next_character()
         return token
