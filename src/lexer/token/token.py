@@ -16,3 +16,6 @@ class Token:
 
     def get_position(self):
         return self._position
+
+    def get_value(self):
+        return self._value
