@@ -25,7 +25,7 @@
 
 ## Requirements analysis
 Since it ought to be possible to run Misnomer scripts from text files, there is a need to specify their path easily.
-Therefore, it must not be hardcoded into the interpreter but instead given a run parameter.
+Therefore, it must not be hardcoded into the interpreter but instead given as a run parameter.
 Additionally, the recursion limit should be changeable,
 so I will add a run flag to allow the user to set a non-default value.
 
@@ -36,7 +36,7 @@ will have precision equal to the C double on your machine
 - source code reader class will not handle line endings explicitly, since it's provided by
 [`io.TextIOWrapper`](https://docs.python.org/3.10/library/io.html?highlight=textiowrapper#io.TextIOWrapper)
 
-
+Additionally, there is a default limit for string length that equals 1000 characters.
 
 
 ## Error handling
@@ -55,33 +55,29 @@ It is possible to run the interpreter with different settings. At the moment you
 ```shell
 python misnomer.py path_to_script.mnm --recursion_limit 30
 ```
+As well as maximum string length limit:
+```shell
+python misnomer.py path_to_script.mnm --max_string_length 2000
+```
 
 ## Exemplary code snippets
 *At the moment, the snippets show what the language is supposed to look like in the future.*
 1. The program execution starts from the `main()`:
     ```bash
-    func main() {
+    main() returns int {
         print("Hello world!");
         return 0;
     }
     ```
 
-2. Each part of code can be described using comments:
-    ```bash
-    func main() {
-        print("Hello world!"); # Prints hello world on screen
-        return 0;
-    }
-    ```
-
-4. You can use local variables:
+2. You can use local variables:
     ```bash
     var my_integer: int = 0;
     var my_float: float = 1.5;
     var my_string: string = "penguin";
     ```
 
-5. There is a conditional statement available:
+3. There is a conditional statement available:
     ```bash
     if (a == 1) {
         print("a = 1!");
@@ -92,17 +88,16 @@ python misnomer.py path_to_script.mnm --recursion_limit 30
     }
     ```
 
-6. It is possible to define your own functions:
+4. It is possible to define your own functions:
     ```bash
-    func foo(a: int) {
+    foo(a: int) returns int{
         a = a+1;
         return a;
     }
     ```
    You can define variables within `()` braces and return an optional function result using the `return` keyword.
 
-
-7. You can use a `while()` loop when you want to repeat the same set of instructions many times:
+5. You can use a `while()` loop when you want to repeat the same set of instructions many times:
     ```bash
     while (a != 100) {
         a = a+1;
@@ -110,7 +105,7 @@ python misnomer.py path_to_script.mnm --recursion_limit 30
     }
     ```
 
-8. It is possible to print a concatenation of the multiple parameters:
+6. It is possible to print a concatenation of the multiple parameters:
     ```bash
     var a: string = "hundred";
     var b: int = 100;
@@ -118,7 +113,7 @@ python misnomer.py path_to_script.mnm --recursion_limit 30
     print("You can put even a ", a, "(", b, ") parameters here!");
     ```
 
-9. Users can be made to input some value into the running program:
+7. Users can be made to input some value into the running program:
     ```bash
     var user_input: str = input("Please type something: ");
     ```
