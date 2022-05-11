@@ -4,7 +4,7 @@ from lexer.lexer import Lexer
 from lexer.token.token import Token
 from lexer.token.token_type import TokenType
 from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, MisnomerParserNoFunctionBodyException
-from parser.syntax_tree import Program, FunctionDefinition, FunctionArgument
+from parser.syntax_tree import Program, FunctionDefinition, FunctionArgument, StatementBlock
 from utils.position import Position
 
 AVAILABLE_TYPES = (TokenType.INT, TokenType.FLOAT, TokenType.STRING)
@@ -49,26 +49,72 @@ class Parser:
             self.consume_token(TokenType.ROUND_BRACKET_R, strict=True)
             self.consume_token(TokenType.RETURNS, strict=True)
             return_type = self.consume_tokens(AVAILABLE_TYPES, strict=True)
-            function_body = self.parse_body()
+            statement_block = self.parse_statement_block()
 
-            if not function_body:
+            if not statement_block:
                 raise MisnomerParserNoFunctionBodyException(function_name, self.get_position())
 
-            return FunctionDefinition(function_name, function_arguments, return_type, function_body,
+            return FunctionDefinition(function_name, function_arguments, return_type, statement_block,
                                       self.get_position())
 
     def parse_arguments(self) -> [FunctionArgument]:
         arguments = []
 
-        while token := self.consume_token(TokenType.IDENTIFIER, strict=False):
+        if first_argument := self.consume_token(TokenType.IDENTIFIER, strict=False):
             self.consume_token(TokenType.COLON, strict=True)
             argument_type = self.consume_tokens(AVAILABLE_TYPES, strict=True)
-            argument = FunctionArgument(token.get_value(), argument_type)
+            argument = FunctionArgument(first_argument.get_value(), argument_type)
             arguments.append(argument)
 
-            self.consume_token(TokenType.COMA, strict=False)
+            while self.consume_token(TokenType.COMA, strict=False):
+                token = self.consume_token(TokenType.IDENTIFIER, strict=True)
+                self.consume_token(TokenType.COLON, strict=True)
+                argument_type = self.consume_tokens(AVAILABLE_TYPES, strict=True)
+                argument = FunctionArgument(token.get_value(), argument_type)
+                arguments.append(argument)
 
-        return arguments
+            return arguments
 
-    def parse_body(self) -> list:
+    def parse_statement_block(self) -> StatementBlock:
+        if self.consume_token(TokenType.CURLY_BRACKET_L, strict=False):
+            statement_block = StatementBlock(self.get_position())
+
+            while statement := self.parse_statement():
+                statement_block.add_statement(statement)
+
+            self.consume_token(TokenType.CURLY_BRACKET_R, strict=True)
+
+            return statement_block
+
+    def parse_statement(self):
+        if statement := self.parse_if_statement():
+            return statement
+        if statement := self.parse_while_statement():
+            return statement
+        if statement := self.parse_return_statement():
+            return statement
+        if statement := self.parse_function_call():
+            return statement
+        if statement := self.parse_variable_initialisation():
+            return statement
+        if statement := self.parse_loop_control():
+            return statement
+
+    def parse_if_statement(self):
         pass
+
+    def parse_while_statement(self):
+        pass
+
+    def parse_return_statement(self):
+        pass
+
+    def parse_function_call(self):
+        pass
+
+    def parse_variable_initialisation(self):
+        pass
+
+    def parse_loop_control(self):
+        pass
+
