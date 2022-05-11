@@ -18,13 +18,13 @@ class MisnomerParserUnexpectedTokenException(MisnomerParserException):
         super(MisnomerParserUnexpectedTokenException, self).__init__(position, message, give_position=True)
 
 
-class MisnomerParserNoBodyException(MisnomerParserException):
+class MisnomerParserNoStatementBlockException(MisnomerParserException):
     def __init__(self, details: str, position: Position):
-        message = f"There is no body for {details}."
-        super(MisnomerParserNoBodyException, self).__init__(position, message, give_position=True)
+        message = f"There is no statement block for {details}."
+        super(MisnomerParserNoStatementBlockException, self).__init__(position, message, give_position=True)
 
 
-class MisnomerParserNoFunctionBodyException(MisnomerParserNoBodyException):
+class MisnomerParserNoFunctionStatementBlockException(MisnomerParserNoStatementBlockException):
     def __init__(self, function_name: str, position: Position):
         details = f"{function_name} function"
-        super(MisnomerParserNoFunctionBodyException, self).__init__(details, position)
+        super(MisnomerParserNoFunctionStatementBlockException, self).__init__(details, position)
