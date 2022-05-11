@@ -3,13 +3,14 @@
 program                         = { function_definition } ;
 
 (* Statements *)
-statement_block                 = "{" { variable_initialisation | statement |
-                                  break_keyword ";" | continue_keyword ";" } "}" ;
+statement_block                 = "{" { variable_initialisation | statement } "}" ;
 if_statement                    = if_keyword "(" logic_expression ")" ( statement_block | statement )
                                   [ else_keyword ( statement_block | statement ) ] ;
 while_statement                 = while_keyword "(" logic_expression ")" ( statement_block | statement ) ;
 return_statement                = return_keyword [ logic_expression ] ";" ;
-statement                       = if_statement | while_statement | return_statement | function_call ";" ;
+loop_control_statement          = ( break_keyword | continue_keyword) ";" ;
+statement                       = if_statement | while_statement | return_statement | loop_control_statement |
+                                  function_call ";" ;
 
 (* Functions *)
 function_call                   = identifier "(" function_arguments ")" ;
