@@ -3,7 +3,8 @@
 program                         = { function_definition } ;
 
 (* Statements *)
-statement_block                 = "{" { variable_initialisation | statement | "break" ";" | "continue" ";" } "}" ;
+statement_block                 = "{" { variable_initialisation | statement |
+                                  break_keyword ";" | continue_keyword ";" } "}" ;
 if_statement                    = if_keyword "(" logic_expression ")" ( statement_block | statement )
                                   [ else_keyword ( statement_block | statement ) ] ;
 while_statement                 = while_keyword "(" logic_expression ")" ( statement_block | statement ) ;
@@ -60,6 +61,8 @@ returns_keyword                 = "returns" ;
 if_keyword                      = "if" ;
 else_keyword                    = "else" ;
 while_keyword                   = "while" ;
+break_keyword                   = "break" ;
+continue_keyword                = "continue" ;
 
 (* Types *)
 types                           = integer_type | float_type | string_type ;
