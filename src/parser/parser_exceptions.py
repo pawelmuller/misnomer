@@ -28,3 +28,47 @@ class MisnomerParserNoFunctionStatementBlockException(MisnomerParserNoStatementB
     def __init__(self, function_name: str, position: Position):
         details = f"{function_name} function"
         super(MisnomerParserNoFunctionStatementBlockException, self).__init__(details, position)
+
+
+class MisnomerParserNoIfStatementBlockException(MisnomerParserNoStatementBlockException):
+    def __init__(self, position: Position):
+        details = f"if statement"
+        super(MisnomerParserNoIfStatementBlockException, self).__init__(details, position)
+
+
+class MisnomerParserNoElseStatementBlockException(MisnomerParserNoStatementBlockException):
+    def __init__(self, position: Position):
+        details = f"else statement"
+        super(MisnomerParserNoElseStatementBlockException, self).__init__(details, position)
+
+
+class MisnomerParserNoWhileStatementBlockException(MisnomerParserNoStatementBlockException):
+    def __init__(self, position: Position):
+        details = f"while loop"
+        super(MisnomerParserNoWhileStatementBlockException, self).__init__(details, position)
+
+
+class MisnomerParserNoConditionException(MisnomerParserException):
+    def __init__(self, details: str, position: Position):
+        message = f"There is no condition for {details}."
+        super(MisnomerParserNoConditionException, self).__init__(position, message, give_position=True)
+
+
+class MisnomerParserNoIfConditionException(MisnomerParserNoConditionException):
+    def __init__(self, position: Position):
+        details = f"if statement"
+        super(MisnomerParserNoIfConditionException, self).__init__(details, position)
+
+
+class MisnomerParserNoWhileConditionException(MisnomerParserNoConditionException):
+    def __init__(self, position: Position):
+        details = f"while statement"
+        super(MisnomerParserNoWhileConditionException, self).__init__(details, position)
+
+
+class MisnomerParserNoExpressionException(MisnomerParserException):
+    def __init__(self, current_token: TokenType, position: Position):
+        message = f"There is no valid expression after {current_token}."
+        super(MisnomerParserNoExpressionException, self).__init__(position, message, give_position=True)
+
+
