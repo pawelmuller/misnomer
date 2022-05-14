@@ -11,6 +11,7 @@ def obtain_run_arguments():
     argument_parser = argparse.ArgumentParser("Misnomer")
     argument_parser.add_argument("path", type=str, help="Path to the executive file.")
     argument_parser.add_argument("--recursion_limit", type=int, help="Set the recursion limit.", default=1000)
+    argument_parser.add_argument("--max_string_length", type=int, help="Set the maximum string length.", default=1000)
 
     arguments = argument_parser.parse_args()
     return arguments
