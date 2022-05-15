@@ -57,26 +57,27 @@ class Parser:
             if not statement_block:
                 raise MisnomerParserNoFunctionStatementBlockException(function_name, self.get_current_token_position())
 
-            return FunctionDefinition(function_name, function_parameters, return_type, statement_block,
-                                      self.get_current_token_position())
+            return FunctionDefinition(function_name, function_parameters, TYPES.get(return_type.get_type()),
+                                      statement_block, self.get_current_token_position())
 
     def parse_parameters(self) -> [FunctionParameter]:
         parameters = []
 
-        if first_parameter := self.parse_parameter():
+        if first_parameter := self.parse_parameter(strict=False):
             parameters.append(first_parameter)
 
             while self.consume_token(TokenType.COMA, strict=False):
-                parameter = self.parse_parameter()
+                parameter = self.parse_parameter(strict=True)
                 parameters.append(parameter)
 
             return parameters
 
-    def parse_parameter(self) -> FunctionParameter:
-        if token := self.consume_token(TokenType.IDENTIFIER, strict=True):
+    def parse_parameter(self, *, strict: bool = False) -> FunctionParameter:
+        if identifier := self.consume_token(TokenType.IDENTIFIER, strict=strict):
             self.consume_token(TokenType.COLON, strict=True)
             parameter_type = self.consume_tokens(AVAILABLE_TYPES, strict=True)
-            parameter = FunctionParameter(token.get_value(), parameter_type, self.get_current_token_position())
+            parameter = FunctionParameter(identifier.get_value(), TYPES.get(parameter_type.get_type()),
+                                          self.get_current_token_position())
             return parameter
 
     def parse_statement_block(self) -> StatementBlock:
