@@ -3,14 +3,16 @@
 program                         = { function_definition } ;
 
 (* Statements *)
-statement_block                 = "{" { variable_initialisation | statement } "}" ;
+statement_block                 = "{" { statement } "}" ;
 if_statement                    = if_keyword "(" logic_expression ")" ( statement_block | statement )
                                   [ else_keyword ( statement_block | statement ) ] ;
 while_statement                 = while_keyword "(" logic_expression ")" ( statement_block | statement ) ;
-return_statement                = return_keyword [ logic_expression ] ";" ;
-loop_control_statement          = ( break_keyword | continue_keyword) ";" ;
-statement                       = if_statement | while_statement | return_statement | loop_control_statement |
-                                  function_call ";" ;
+return_statement                = return_keyword [ logic_expression ] ;
+loop_control_statement          = ( break_keyword | continue_keyword) ;
+statement                       = statements_with_block | ( statements_without_block instruction_end_character ) ;
+statements_with_block           = if_statement | while_statement ;
+statements_without_block        = variable_initialisation | variable_assignment | return_statement |
+                                  loop_control_statement | function_call ;
 
 (* Functions *)
 function_call                   = identifier "(" function_arguments ")" ;
@@ -79,5 +81,6 @@ letter                          = "a".."z" | "A".."Z" ;
 digit                           = zero_digit | non_zero_digit ;
 non_zero_digit                  = "1".."9" ;
 zero_digit                      = "0" ;
+instruction_end_character       = ";"
 whitespace                      = ? white space characters ? ;
 all_characters                  = ? all visible characters ? ;

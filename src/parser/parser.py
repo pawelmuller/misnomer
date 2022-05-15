@@ -3,6 +3,7 @@ from copy import copy
 from lexer.lexer import Lexer
 from lexer.token.token import Token
 from lexer.token.token_type import TokenType
+from parser.dictionaries import TYPES, AVAILABLE_VAR_TYPES
 from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoFunctionStatementBlockException, MisnomerParserNoElseStatementBlockException, \
     MisnomerParserNoIfConditionException, MisnomerParserNoWhileConditionException, MisnomerParserNoExpressionException
@@ -92,18 +93,33 @@ class Parser:
             return statement_block
 
     def parse_statement(self):
-        if statement := self.parse_variable_initialisation():
-            return statement
+        if statement := self.parse_statement_with_block():
+            pass
+        elif statement := self.parse_statement_without_block():
+            pass
+        return statement
+
+    def parse_statement_with_block(self):
         if statement := self.parse_if_statement():
-            return statement
-        if statement := self.parse_while_statement():
-            return statement
-        if statement := self.parse_return_statement():
-            return statement
-        if statement := self.parse_loop_control():
-            return statement
-        if statement := self.parse_function_call():
-            return statement
+            pass
+        elif statement := self.parse_while_statement():
+            pass
+        return statement
+
+    def parse_statement_without_block(self):
+        if statement := self.parse_variable_initialisation():
+            pass
+        elif statement := self.parse_variable_assignment():
+            pass
+        elif statement := self.parse_return_statement():
+            pass
+        elif statement := self.parse_loop_control_statement():
+            pass
+        elif statement := self.parse_function_call():
+            pass
+
+        self.consume_token(TokenType.SEMICOLON, strict=True)
+        return statement
 
     def parse_if_statement(self) -> IfStatement:
         if self.consume_token(TokenType.IF, strict=False):
@@ -180,14 +196,30 @@ class Parser:
     def parse_while_statement(self):
         pass
 
+    def parse_variable_initialisation(self):
+        if self.consume_token(TokenType.VAR, strict=False):
+            if statement := self.parse_string_variable_initialisation():
+                return statement
+            if statement := self.parse_numeric_variable_initialisation():
+                return statement
+            raise Exception
+
+    def parse_string_variable_initialisation(self):
+        if identifier := self.consume_token(TokenType.IDENTIFIER, strict=False):
+            self.consume_token(TokenType.COLON, strict=True)
+            variable_type = self.consume_token(AVAILABLE_VAR_TYPES, strict=True)
+
+    def parse_numeric_variable_initialisation(self):
+        pass
+
+    def parse_variable_assignment(self):
+        pass
+
     def parse_return_statement(self):
         pass
 
+    def parse_loop_control_statement(self):
+        pass
+
     def parse_function_call(self):
-        pass
-
-    def parse_variable_initialisation(self):
-        pass
-
-    def parse_loop_control(self):
         pass
