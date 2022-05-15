@@ -16,7 +16,7 @@ statement                       = if_statement | while_statement | return_statem
 function_call                   = identifier "(" function_arguments ")" ;
 function_arguments              = [ logic_expression { "," logic_expression } ] ;
 function_definition             = identifier "(" function_parameters ")"
-                                  "returns_keyword" function_types statement_block ;
+                                  returns_keyword function_types statement_block ;
 function_parameters             = [ function_parameter { "," function_parameter } ] ;
 function_parameter              = identifier ":" types ;
 
