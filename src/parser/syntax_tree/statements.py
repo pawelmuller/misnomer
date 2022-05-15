@@ -1,4 +1,5 @@
 from parser.syntax_tree.syntax_tree import Node
+from parser.types import Type
 from utils.position import Position
 
 
@@ -16,14 +17,14 @@ class StatementBlock(Node):
 
 
 class FunctionParameter(Node):
-    def __init__(self, name: str, argument_type, position: Position):
+    def __init__(self, name: str, argument_type: Type, position: Position):
         super().__init__(position)
         self.name = name
         self.argument_type = argument_type
 
 
 class FunctionDefinition(Node):
-    def __init__(self, name: str, arguments: [FunctionParameter], return_type, statement_block: StatementBlock,
+    def __init__(self, name: str, arguments: [FunctionParameter], return_type: Type, statement_block: StatementBlock,
                  position: Position):
         super().__init__(position)
         self.name = name
