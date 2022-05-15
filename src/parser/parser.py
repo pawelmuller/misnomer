@@ -3,7 +3,7 @@ from copy import copy
 from lexer.lexer import Lexer
 from lexer.token.token import Token
 from lexer.token.token_type import TokenType
-from parser.dictionaries import TYPES, AVAILABLE_VAR_TYPES
+from parser.dictionaries import TYPES, AVAILABLE_VAR_TYPES, AVAILABLE_FUNCTION_TYPES
 from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoFunctionStatementBlockException, MisnomerParserNoElseStatementBlockException, \
     MisnomerParserNoIfConditionException, MisnomerParserNoWhileConditionException, MisnomerParserNoExpressionException
@@ -11,8 +11,6 @@ from parser.syntax_tree.expressions import AndExpression, NotExpression, OrExpre
 from parser.syntax_tree.statements import FunctionParameter, StatementBlock, IfStatement, IfCondition, WhileCondition, \
     FunctionDefinition
 from parser.syntax_tree.syntax_tree import Program
-
-AVAILABLE_TYPES = (TokenType.INT, TokenType.FLOAT, TokenType.STRING)
 
 
 class Parser:
@@ -52,7 +50,7 @@ class Parser:
             function_parameters = self.parse_parameters()
             self.consume_token(TokenType.ROUND_BRACKET_R, strict=True)
             self.consume_token(TokenType.RETURNS, strict=True)
-            return_type = self.consume_tokens(AVAILABLE_TYPES, strict=True)
+            return_type = self.consume_tokens(AVAILABLE_FUNCTION_TYPES, strict=True)
             statement_block = self.parse_statement_block()
 
             if not statement_block:
@@ -76,7 +74,7 @@ class Parser:
     def parse_parameter(self, *, strict: bool = False) -> FunctionParameter:
         if identifier := self.consume_token(TokenType.IDENTIFIER, strict=strict):
             self.consume_token(TokenType.COLON, strict=True)
-            parameter_type = self.consume_tokens(AVAILABLE_TYPES, strict=True)
+            parameter_type = self.consume_tokens(AVAILABLE_VAR_TYPES, strict=True)
             parameter = FunctionParameter(identifier.get_value(), TYPES.get(parameter_type.get_type()),
                                           self.get_current_token_position())
             return parameter
