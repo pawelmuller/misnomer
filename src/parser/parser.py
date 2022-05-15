@@ -3,12 +3,13 @@ from copy import copy
 from lexer.lexer import Lexer
 from lexer.token.token import Token
 from lexer.token.token_type import TokenType
-from parser.dictionaries import TYPES, AVAILABLE_VAR_TYPES, AVAILABLE_FUNCTION_TYPES
+from parser.dictionaries import TYPES, AVAILABLE_VAR_TYPES, AVAILABLE_FUNCTION_TYPES, RELATIONAL_OPERATORS, \
+    RELATIONAL_EXPRESSIONS
 from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoFunctionStatementBlockException, MisnomerParserNoElseStatementBlockException, \
     MisnomerParserNoIfConditionException, MisnomerParserNoWhileConditionException, \
     MisnomerParserNoExpressionException, MisnomerParserNoWhileInstructionsException, \
-    MisnomerParserNoIfInstructionsException
+    MisnomerParserNoIfInstructionsException, MisnomerParserNoSecondRelationalExpressionException
 from parser.syntax_tree.expressions import AndExpression, NotExpression, OrExpression
 from parser.syntax_tree.statements import FunctionParameter, StatementBlock, IfStatement, FunctionDefinition, \
     Condition, WhileStatement
@@ -173,6 +174,25 @@ class Parser:
             else:
                 return AndExpression(expressions, self.get_current_token_position())
 
+    def parse_relational_expression(self):
+        if first_expression := self.parse_mathematical_expression():
+            if expression_operator := self.consume_token(RELATIONAL_OPERATORS, strict=False):
+                if not (second_expression := self.parse_mathematical_expression()):
+                    raise MisnomerParserNoSecondRelationalExpressionException(self._current_token.get_type(),
+                                                                              self.get_current_token_position())
+                expression_class = RELATIONAL_EXPRESSIONS.get(expression_operator.get_type())
+                return expression_class(first_expression, second_expression, self.get_current_token_position())
+            return first_expression
+
+    def parse_mathematical_expression(self):
+        pass
+
+    def parse_multiplicative_expression(self):
+        pass
+
+    def parse_base_mathematical_expression(self):
+        pass
+
     def parse_not_expression(self) -> NotExpression:
         if self.consume_token(TokenType.NOT, strict=False):
             if not (logic_expression := self.parse_logic_expression()):
@@ -181,9 +201,6 @@ class Parser:
             return NotExpression(logic_expression, self.get_current_token_position())
         else:
             return self.parse_logic_expression()
-
-    def parse_logic_expression(self):
-        pass
 
     def parse_while_statement(self):
         if self.consume_token(TokenType.WHILE, strict=False):

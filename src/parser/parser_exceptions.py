@@ -90,3 +90,9 @@ class MisnomerParserNoExpressionException(MisnomerParserException):
         super(MisnomerParserNoExpressionException, self).__init__(position, message, give_position=True)
 
 
+class MisnomerParserNoSecondRelationalExpressionException(MisnomerParserException):
+    def __init__(self, current_token: TokenType, position: Position):
+        message = f"There is no second relational expression after {current_token}."
+        super(MisnomerParserNoSecondRelationalExpressionException, self).__init__(position, message, give_position=True)
+
+

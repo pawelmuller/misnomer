@@ -21,3 +21,40 @@ class AndExpression(Expression):
 class NotExpression(Expression):
     def __init__(self, expressions, position: Position):
         super().__init__(expressions, position)
+
+
+class BinaryExpression(Node):  # Not sure about naming
+    def __init__(self, left, right, position: Position):
+        super().__init__(position)
+        self.left = left
+        self.right = right
+
+
+class EqualExpression(BinaryExpression):
+    def __init__(self, left, right, position: Position):
+        super().__init__(left, right, position)
+
+
+class NotEqualExpression(BinaryExpression):
+    def __init__(self, left, right, position: Position):
+        super().__init__(left, right, position)
+
+
+class LessExpression(BinaryExpression):
+    def __init__(self, left, right, position: Position):
+        super().__init__(left, right, position)
+
+
+class LessEqualExpression(BinaryExpression):
+    def __init__(self, left, right, position: Position):
+        super().__init__(left, right, position)
+
+
+class GreaterExpression(BinaryExpression):
+    def __init__(self, left, right, position: Position):
+        super().__init__(left, right, position)
+
+
+class GreaterEqualExpression(BinaryExpression):
+    def __init__(self, left, right, position: Position):
+        super().__init__(left, right, position)

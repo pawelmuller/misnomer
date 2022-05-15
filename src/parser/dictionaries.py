@@ -1,8 +1,22 @@
 from lexer.token.token_type import TokenType
+from parser.syntax_tree.expressions import EqualExpression, NotEqualExpression, LessExpression, LessEqualExpression, \
+    GreaterExpression, GreaterEqualExpression
 from parser.types import Type
 
 AVAILABLE_VAR_TYPES = (TokenType.INT, TokenType.FLOAT, TokenType.STRING)
 AVAILABLE_FUNCTION_TYPES = AVAILABLE_VAR_TYPES + (TokenType.NOTHING, )
+RELATIONAL_OPERATORS = (TokenType.EQUAL, TokenType.NOT_EQUAL,
+                        TokenType.LESS, TokenType.LESS_EQUAL,
+                        TokenType.GREATER, TokenType.GREATER_EQUAL)
+
+RELATIONAL_EXPRESSIONS = {
+    TokenType.EQUAL: EqualExpression,
+    TokenType.NOT_EQUAL: NotEqualExpression,
+    TokenType.LESS: LessExpression,
+    TokenType.LESS_EQUAL: LessEqualExpression,
+    TokenType.GREATER: GreaterExpression,
+    TokenType.GREATER_EQUAL: GreaterEqualExpression
+}
 
 TYPES = {
     TokenType.INT: Type.INT,
