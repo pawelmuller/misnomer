@@ -4,13 +4,14 @@ from lexer.lexer import Lexer
 from lexer.token.token import Token
 from lexer.token.token_type import TokenType
 from parser.dictionaries import TYPES, AVAILABLE_VAR_TYPES, AVAILABLE_FUNCTION_TYPES, RELATIONAL_OPERATORS, \
-    RELATIONAL_EXPRESSIONS
+    RELATIONAL_EXPRESSIONS, ADDITIVE_OPERATORS, MULTIPLICATIVE_OPERATORS
 from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoFunctionStatementBlockException, MisnomerParserNoElseStatementBlockException, \
     MisnomerParserNoIfConditionException, MisnomerParserNoWhileConditionException, \
     MisnomerParserNoExpressionException, MisnomerParserNoWhileInstructionsException, \
     MisnomerParserNoIfInstructionsException, MisnomerParserNoSecondRelationalExpressionException
-from parser.syntax_tree.expressions import AndExpression, NotExpression, OrExpression
+from parser.syntax_tree.expressions import AndExpression, NotExpression, LogicExpression, MathematicalExpression, \
+    MultiplicativeExpression
 from parser.syntax_tree.statements import FunctionParameter, StatementBlock, IfStatement, FunctionDefinition, \
     Condition, WhileStatement
 from parser.syntax_tree.syntax_tree import Program
@@ -146,11 +147,11 @@ class Parser:
     def parse_conditional_instructions(self):
         return self.parse_statement_block() or self.parse_statement()
 
-    def parse_logic_expression(self):
-        if first_expression := self.parse_and_expression():
+    def parse_expression(self, parse_sub_expression, acceptable_connector, expression_class):
+        if first_expression := parse_sub_expression():
             expressions = [first_expression]
-            while self.consume_token(TokenType.OR, strict=False):
-                if not (expression := self.parse_and_expression()):
+            while self.consume_token(acceptable_connector, strict=False):
+                if not (expression := parse_sub_expression()):
                     raise MisnomerParserNoExpressionException(self._current_token.get_type(),
                                                               self.get_current_token_position())
                 expressions.append(expression)
@@ -158,21 +159,13 @@ class Parser:
             if len(expressions) == 1:
                 return first_expression
             else:
-                return OrExpression(expressions, self.get_current_token_position())
+                return expression_class(expressions, self.get_current_token_position())
+
+    def parse_logic_expression(self):
+        return self.parse_expression(self.parse_and_expression, TokenType.OR, LogicExpression)
 
     def parse_and_expression(self) -> AndExpression:
-        if first_expression := self.parse_relational_expression():
-            expressions = [first_expression]
-            while self.consume_token(TokenType.AND, strict=False):
-                if not (expression := self.parse_relational_expression()):
-                    raise MisnomerParserNoExpressionException(self._current_token.get_type(),
-                                                              self.get_current_token_position())
-                expressions.append(expression)
-
-            if len(expressions) == 1:
-                return first_expression
-            else:
-                return AndExpression(expressions, self.get_current_token_position())
+        return self.parse_expression(self.parse_relational_expression, TokenType.AND, AndExpression)
 
     def parse_relational_expression(self):
         if first_expression := self.parse_mathematical_expression():
@@ -185,10 +178,11 @@ class Parser:
             return first_expression
 
     def parse_mathematical_expression(self):
-        pass
+        return self.parse_expression(self.parse_multiplicative_expression, ADDITIVE_OPERATORS, MathematicalExpression)
 
     def parse_multiplicative_expression(self):
-        pass
+        return self.parse_expression(self.parse_base_mathematical_expression, MULTIPLICATIVE_OPERATORS,
+                                     MultiplicativeExpression)
 
     def parse_base_mathematical_expression(self):
         pass

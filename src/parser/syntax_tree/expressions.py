@@ -8,7 +8,7 @@ class Expression(Node):
         self.expressions = expressions
 
 
-class OrExpression(Expression):
+class LogicExpression(Expression):
     def __init__(self, expressions: list, position: Position):
         super().__init__(expressions, position)
 
@@ -19,6 +19,21 @@ class AndExpression(Expression):
 
 
 class NotExpression(Expression):
+    def __init__(self, expressions, position: Position):
+        super().__init__(expressions, position)
+
+
+class MathematicalExpression(Expression):
+    def __init__(self, expressions, position: Position):
+        super().__init__(expressions, position)
+
+
+class MultiplicativeExpression(Expression):
+    def __init__(self, expressions, position: Position):
+        super().__init__(expressions, position)
+
+
+class BaseMathematicalExpression(Expression):
     def __init__(self, expressions, position: Position):
         super().__init__(expressions, position)
 

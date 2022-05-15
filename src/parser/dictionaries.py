@@ -5,6 +5,14 @@ from parser.types import Type
 
 AVAILABLE_VAR_TYPES = (TokenType.INT, TokenType.FLOAT, TokenType.STRING)
 AVAILABLE_FUNCTION_TYPES = AVAILABLE_VAR_TYPES + (TokenType.NOTHING, )
+
+TYPES = {
+    TokenType.INT: Type.INT,
+    TokenType.FLOAT: Type.FLOAT,
+    TokenType.STRING: Type.STRING,
+    TokenType.NOTHING: Type.NOTHING
+}
+
 RELATIONAL_OPERATORS = (TokenType.EQUAL, TokenType.NOT_EQUAL,
                         TokenType.LESS, TokenType.LESS_EQUAL,
                         TokenType.GREATER, TokenType.GREATER_EQUAL)
@@ -18,9 +26,6 @@ RELATIONAL_EXPRESSIONS = {
     TokenType.GREATER_EQUAL: GreaterEqualExpression
 }
 
-TYPES = {
-    TokenType.INT: Type.INT,
-    TokenType.FLOAT: Type.FLOAT,
-    TokenType.STRING: Type.STRING,
-    TokenType.NOTHING: Type.NOTHING
-}
+ADDITIVE_OPERATORS = (TokenType.ADD, TokenType.SUBTRACT)
+
+MULTIPLICATIVE_OPERATORS = (TokenType.MULTIPLY, TokenType.DIVIDE)

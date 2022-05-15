@@ -27,17 +27,16 @@ function_parameter              = identifier ":" types ;
 variable_initialisation         = variable_keyword ( numeric_variable_initialisation | string_variable_initialisation ) ;
 string_variable_initialisation  = identifier ":" string_type [ assignment_operator string_literal ] ;
 numeric_variable_initialisation = identifier ":" numeric_types [ assignment_operator numeric_literal ] ;
-variable_assignment             = variable assignment_operator expression ;
+variable_assignment             = variable assignment_operator value ;
 
 (* Expressions *)
 mathematical_expression         = multiplicative_expression { additive_operator multiplicative_expression } ;
 logic_expression                = and_expression { or_operator and_expression } ;
 relational_expression           = mathematical_expression [ relational_operator mathematical_expression ] ;
-expression                      = numeric_literal | string_literal ;
 
 (* Expressions helpers *)
 multiplicative_expression       = base_mathematical_expression { multiplicative_operator base_mathematical_expression } ;
-base_mathematical_expression    = [ "-" | unary_operator ] ( value | "(" logic_expression ")" ) ;
+base_mathematical_expression    = [ "-" ] value | [ unary_operator ] logic_expression ) ;
 and_expression                  = relational_expression { and_operator relational_expression } ;
 
 (* Base structures *)
