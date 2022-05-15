@@ -33,6 +33,19 @@ class FunctionDefinition(Node):
         self.statement_block = statement_block
 
 
+class FunctionCall(Node):
+    def __init__(self, identifier, arguments, position: Position):
+        super().__init__(position)
+        self.identifier = identifier
+        self.arguments = arguments
+
+
+class Identifier(Node):
+    def __init__(self, name, position: Position):
+        super().__init__(position)
+        self.name = name
+
+
 class Condition(Node):
     def __init__(self, logic_expression, position: Position):
         super().__init__(position)

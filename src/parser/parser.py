@@ -12,8 +12,9 @@ from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoIfInstructionsException, MisnomerParserNoSecondRelationalExpressionException
 from parser.syntax_tree.expressions import AndExpression, NotExpression, LogicExpression, MathematicalExpression, \
     MultiplicativeExpression
+from parser.syntax_tree.literals import NumericLiteral, StringLiteral
 from parser.syntax_tree.statements import FunctionParameter, StatementBlock, IfStatement, FunctionDefinition, \
-    Condition, WhileStatement
+    Condition, WhileStatement, FunctionCall, Identifier
 from parser.syntax_tree.syntax_tree import Program
 
 
@@ -185,7 +186,53 @@ class Parser:
                                      MultiplicativeExpression)
 
     def parse_base_mathematical_expression(self):
-        pass
+        operator = self.consume_token(TokenType.SUBTRACT, strict=False) or self.consume_token(TokenType.NOT, strict=False)
+
+        if expression := self.parse_parenthesized_operation():
+            pass
+        elif expression := self.parse_value():
+            pass
+
+        if operator:
+            if not expression:
+                raise MisnomerParserNoExpressionException(operator.get_type(), operator.get_position())
+            return NotExpression(expression, self.get_current_token_position())
+
+    def parse_parenthesized_operation(self):
+        if self.consume_token(TokenType.ROUND_BRACKET_L, strict=False):
+            logic_expression = self.parse_logic_expression()
+            self.consume_token(TokenType.ROUND_BRACKET_R, strict=True)
+            return logic_expression
+
+    def parse_value(self):
+        if expression := self.parse_literal():
+            pass
+        elif expression := self.parse_identifier_expression():
+            pass
+        return expression
+
+    def parse_literal(self):
+        if literal := self.parse_numeric_literal():
+            pass
+        elif literal := self.parse_string_literal():
+            pass
+        return literal
+
+    def parse_identifier_expression(self):
+        if identifier := self.consume_token(TokenType.IDENTIFIER, strict=False):
+            if expression := self.parse_function_call(identifier):
+                pass
+            else:
+                expression = Identifier(identifier.get_value(), identifier.get_position())
+            return expression
+
+    def parse_numeric_literal(self):
+        if token := self.consume_token(TokenType.NUMERIC_LITERAL, strict=False):
+            return NumericLiteral(token.get_value(), token.get_position())
+
+    def parse_string_literal(self):
+        if token := self.consume_token(TokenType.STRING_LITERAL, strict=False):
+            return StringLiteral(token.get_value(), token.get_position())
 
     def parse_not_expression(self) -> NotExpression:
         if self.consume_token(TokenType.NOT, strict=False):
@@ -229,5 +276,20 @@ class Parser:
     def parse_loop_control_statement(self):
         pass
 
-    def parse_function_call(self):
-        pass
+    def parse_function_call(self, token):
+        if self.consume_token(TokenType.ROUND_BRACKET_L, strict=False):
+            arguments = self.parse_call_arguments()
+            self.consume_token(TokenType.ROUND_BRACKET_R, strict=True)
+
+            identifier = token.get_value()
+            return FunctionCall(identifier, arguments, token.get_position())
+
+    def parse_call_arguments(self):
+        arguments = []
+        if argument := self.parse_logic_expression():
+            arguments.append(argument)
+
+            while self.consume_token(TokenType.COMA, strict=False) is not None:
+                arguments.append(self.parse_logic_expression())
+
+        return arguments
