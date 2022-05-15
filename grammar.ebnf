@@ -4,9 +4,10 @@ program                         = { function_definition } ;
 
 (* Statements *)
 statement_block                 = "{" { statement } "}" ;
-if_statement                    = if_keyword "(" logic_expression ")" ( statement_block | statement )
-                                  [ else_keyword ( statement_block | statement ) ] ;
-while_statement                 = while_keyword "(" logic_expression ")" ( statement_block | statement ) ;
+if_statement                    = if_keyword condition conditional_instructions [ else_keyword conditional_instructions ] ;
+while_statement                 = while_keyword condition conditional_instructions ;
+condition                       = "(" logic_expression ")" ;
+conditional_instructions        = ( statement_block | statement ) ;
 return_statement                = return_keyword [ logic_expression ] ;
 loop_control_statement          = ( break_keyword | continue_keyword) ;
 statement                       = statements_with_block | ( statements_without_block instruction_end_character ) ;

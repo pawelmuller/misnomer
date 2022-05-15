@@ -66,6 +66,24 @@ class MisnomerParserNoWhileConditionException(MisnomerParserNoConditionException
         super(MisnomerParserNoWhileConditionException, self).__init__(details, position)
 
 
+class MisnomerParserNoInstructionsException(MisnomerParserException):
+    def __init__(self, details: str, position: Position):
+        message = f"There are no instructions for {details}."
+        super(MisnomerParserNoInstructionsException, self).__init__(position, message, give_position=True)
+
+
+class MisnomerParserNoIfInstructionsException(MisnomerParserNoConditionException):
+    def __init__(self, position: Position):
+        details = f"if statement"
+        super(MisnomerParserNoIfInstructionsException, self).__init__(details, position)
+
+
+class MisnomerParserNoWhileInstructionsException(MisnomerParserNoConditionException):
+    def __init__(self, position: Position):
+        details = f"while statement"
+        super(MisnomerParserNoWhileInstructionsException, self).__init__(details, position)
+
+
 class MisnomerParserNoExpressionException(MisnomerParserException):
     def __init__(self, current_token: TokenType, position: Position):
         message = f"There is no valid expression after {current_token}."

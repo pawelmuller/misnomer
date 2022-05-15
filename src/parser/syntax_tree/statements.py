@@ -33,29 +33,24 @@ class FunctionDefinition(Node):
         self.statement_block = statement_block
 
 
-class IfCondition(Node):
-    def __init__(self, position: Position):
+class Condition(Node):
+    def __init__(self, logic_expression, position: Position):
         super().__init__(position)
 
 
 class IfStatement(Statement):
-    def __init__(self, condition: IfCondition, statement_block: StatementBlock, else_statement, position: Position):
+    def __init__(self, condition: Condition, instructions, else_statement, position: Position):
         super().__init__(position)
         self.condition = condition
-        self.statement_block = statement_block
-        self.else_statement = "" if else_statement is None else else_statement
-
-
-class WhileCondition(Node):
-    def __init__(self, position: Position):
-        super().__init__(position)
+        self.instructions = instructions
+        self.else_statement = else_statement
 
 
 class WhileStatement(Statement):
-    def __init__(self, condition: WhileCondition, statement_block: StatementBlock, position: Position):
+    def __init__(self, condition: Condition, instructions, position: Position):
         super().__init__(position)
         self.condition = condition
-        self.scope = statement_block
+        self.instructions = instructions
 
 
 class ReturnStatement(Node):
