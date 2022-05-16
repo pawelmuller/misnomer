@@ -12,6 +12,7 @@ class Node:
 class Program(Node):
     def __init__(self):
         super().__init__(Position())
+        self.function_definitions = []
 
     def add_function_definition(self, function_definition):
-        pass
+        self.function_definitions.append(function_definition)

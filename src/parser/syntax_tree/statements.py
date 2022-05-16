@@ -11,9 +11,10 @@ class Statement(Node):
 class StatementBlock(Node):
     def __init__(self, position: Position):
         super().__init__(position)
+        self.statements = []
 
     def add_statement(self, statement):
-        pass
+        self.statements.append(statement)
 
 
 class FunctionParameter(Node):
@@ -73,10 +74,11 @@ class ReturnStatement(Node):
 
 
 class VariableInitialisationStatement(Statement):
-    def __init__(self, name, value, position: Position):
+    def __init__(self, name, value, type: Type, position: Position):
         super().__init__(position)
         self.name = name
         self.value = value
+        self.type = type
 
 
 class AssignmentStatement(Statement):
