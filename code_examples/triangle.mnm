@@ -1,7 +1,7 @@
 check_pythagoras(a: int, b: int, c: int) returns nothing {
     if (a*a + b*b > c*c) {
         print("This is acute triangle.");
-    } else if (a*a + b*b = c*c) {
+    } else if (a*a + b*b == c*c) {
         print("This is right triangle.");
     } else if (a*a + b*b < c*c) {
         print("This is obtuse triangle.");
