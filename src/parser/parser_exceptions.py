@@ -96,3 +96,31 @@ class MisnomerParserNoSecondRelationalExpressionException(MisnomerParserExceptio
         super(MisnomerParserNoSecondRelationalExpressionException, self).__init__(position, message, give_position=True)
 
 
+class MisnomerParserNoIdentifier(MisnomerParserException):
+    def __init__(self, details: str, position: Position):
+        message = f"There is no identifier for {details}."
+        super(MisnomerParserNoIdentifier, self).__init__(position, message, give_position=True)
+
+
+class MisnomerParserNoVariableInitialisationIdentifier(MisnomerParserNoIdentifier):
+    def __init__(self, position: Position):
+        details = f"variable initialisation"
+        super(MisnomerParserNoVariableInitialisationIdentifier, self).__init__(details, position)
+
+
+class MisnomerParserNoLiteral(MisnomerParserException):
+    def __init__(self, details: str, position: Position):
+        message = f"There is no literal for {details}."
+        super(MisnomerParserNoLiteral, self).__init__(position, message, give_position=True)
+
+
+class MisnomerParserNoStringLiteral(MisnomerParserNoLiteral):
+    def __init__(self, position: Position):
+        details = f"string"
+        super(MisnomerParserNoStringLiteral, self).__init__(details, position)
+
+
+class MisnomerParserNoNumericLiteral(MisnomerParserNoLiteral):
+    def __init__(self, position: Position):
+        details = f"numeric"
+        super(MisnomerParserNoNumericLiteral, self).__init__(details, position)

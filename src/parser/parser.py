@@ -14,7 +14,8 @@ from parser.syntax_tree.expressions import AndExpression, NotExpression, LogicEx
     MultiplicativeExpression
 from parser.syntax_tree.literals import NumericLiteral, StringLiteral
 from parser.syntax_tree.statements import FunctionParameter, StatementBlock, IfStatement, FunctionDefinition, \
-    Condition, WhileStatement, FunctionCall, Identifier
+    Condition, WhileStatement, FunctionCall, Identifier, VariableInitialisationStatement, AssignmentStatement, \
+    ReturnStatement
 from parser.syntax_tree.syntax_tree import Program
 
 
@@ -29,10 +30,9 @@ class Parser:
     def get_next_token(self):
         self._current_token = self._lexer.get_next_token()
 
-    def consume_token(self, token_type: TokenType, *, strict: bool = False) -> Token:
-        return self.consume_tokens([token_type], strict=strict)
-
-    def consume_tokens(self, token_types: [TokenType], *, strict: bool = False) -> Token:
+    def consume_token(self, token_types: TokenType or [TokenType], *, strict: bool = False) -> Token:
+        if isinstance(token_types, TokenType):
+            token_types = [token_types]
         token = self._current_token
         if token.get_type() in token_types:
             self.get_next_token()
@@ -55,7 +55,7 @@ class Parser:
             function_parameters = self.parse_parameters()
             self.consume_token(TokenType.ROUND_BRACKET_R, strict=True)
             self.consume_token(TokenType.RETURNS, strict=True)
-            return_type = self.consume_tokens(AVAILABLE_FUNCTION_TYPES, strict=True)
+            return_type = self.consume_token(AVAILABLE_FUNCTION_TYPES, strict=True)
             statement_block = self.parse_statement_block()
 
             if not statement_block:
@@ -79,7 +79,7 @@ class Parser:
     def parse_parameter(self, *, strict: bool = False) -> FunctionParameter:
         if identifier := self.consume_token(TokenType.IDENTIFIER, strict=strict):
             self.consume_token(TokenType.COLON, strict=True)
-            parameter_type = self.consume_tokens(AVAILABLE_VAR_TYPES, strict=True)
+            parameter_type = self.consume_token(AVAILABLE_VAR_TYPES, strict=True)
             parameter = FunctionParameter(identifier.get_value(), TYPES.get(parameter_type.get_type()),
                                           self.get_current_token_position())
             return parameter
@@ -121,8 +121,9 @@ class Parser:
         elif statement := self.parse_function_call():
             pass
 
-        self.consume_token(TokenType.SEMICOLON, strict=True)
-        return statement
+        if statement:
+            self.consume_token(TokenType.SEMICOLON, strict=True)
+            return statement
 
     def parse_if_statement(self) -> IfStatement:
         if self.consume_token(TokenType.IF, strict=False):
@@ -138,12 +139,12 @@ class Parser:
             return IfStatement(condition, instructions, else_statement, self.get_current_token_position())
 
     def parse_condition(self, exception):
-        self.consume_token(TokenType.ROUND_BRACKET_L, strict=True)
+        token = self.consume_token(TokenType.ROUND_BRACKET_L, strict=True)
         if not (logic_expression := self.parse_logic_expression()):
             raise exception(self.get_current_token_position())
         self.consume_token(TokenType.ROUND_BRACKET_R, strict=True)
 
-        return Condition(logic_expression, self.get_current_token_position())
+        return Condition(logic_expression, token.get_position())
 
     def parse_conditional_instructions(self):
         return self.parse_statement_block() or self.parse_statement()
@@ -186,7 +187,8 @@ class Parser:
                                      MultiplicativeExpression)
 
     def parse_base_mathematical_expression(self):
-        operator = self.consume_token(TokenType.SUBTRACT, strict=False) or self.consume_token(TokenType.NOT, strict=False)
+        operator = self.consume_token(TokenType.SUBTRACT, strict=False) \
+                   or self.consume_token(TokenType.NOT, strict=False)
 
         if expression := self.parse_parenthesized_operation():
             pass
@@ -197,6 +199,7 @@ class Parser:
             if not expression:
                 raise MisnomerParserNoExpressionException(operator.get_type(), operator.get_position())
             return NotExpression(expression, self.get_current_token_position())
+        return expression
 
     def parse_parenthesized_operation(self):
         if self.consume_token(TokenType.ROUND_BRACKET_L, strict=False):
@@ -253,30 +256,32 @@ class Parser:
 
     def parse_variable_initialisation(self):
         if self.consume_token(TokenType.VAR, strict=False):
-            if statement := self.parse_string_variable_initialisation():
-                return statement
-            if statement := self.parse_numeric_variable_initialisation():
-                return statement
-            raise Exception
-
-    def parse_string_variable_initialisation(self):
-        if identifier := self.consume_token(TokenType.IDENTIFIER, strict=False):
+            identifier = self.consume_token(TokenType.IDENTIFIER, strict=True)
             self.consume_token(TokenType.COLON, strict=True)
-            variable_type = self.consume_token(AVAILABLE_VAR_TYPES, strict=True)
-
-    def parse_numeric_variable_initialisation(self):
-        pass
+            self.consume_token(AVAILABLE_VAR_TYPES, strict=True)
+            if self.consume_token(TokenType.ASSIGNMENT, strict=False):
+                if value := self.parse_logic_expression():
+                    return VariableInitialisationStatement(identifier.get_value(), value, identifier.get_position())
 
     def parse_variable_assignment(self):
-        pass
+        if identifier := self.consume_token(TokenType.IDENTIFIER, strict=False):
+            if self.consume_token(TokenType.ASSIGNMENT, strict=False):
+                if value := self.parse_logic_expression():
+                    return AssignmentStatement(identifier.get_value(), value, identifier.get_position())
 
     def parse_return_statement(self):
-        pass
+        if token := self.consume_token(TokenType.RETURN, strict=False):
+            if node := self.parse_logic_expression():
+                pass
+
+            return ReturnStatement(node, token.get_position())
 
     def parse_loop_control_statement(self):
         pass
 
-    def parse_function_call(self, token):
+    def parse_function_call(self, token=None):
+        if token is None:
+            token = self.consume_token(TokenType.IDENTIFIER, strict=False)
         if self.consume_token(TokenType.ROUND_BRACKET_L, strict=False):
             arguments = self.parse_call_arguments()
             self.consume_token(TokenType.ROUND_BRACKET_R, strict=True)

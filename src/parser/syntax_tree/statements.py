@@ -70,3 +70,18 @@ class ReturnStatement(Node):
     def __init__(self, value, position: Position):
         super().__init__(position)
         self.value = value
+
+
+class VariableInitialisationStatement(Statement):
+    def __init__(self, name, value, position: Position):
+        super().__init__(position)
+        self.name = name
+        self.value = value
+
+
+class AssignmentStatement(Statement):
+    def __init__(self, name, value, position: Position):
+        super().__init__(position)
+        self.name = name
+        self.value = value
+

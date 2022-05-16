@@ -3,7 +3,7 @@ from utils.position import Position
 
 
 class Expression(Node):
-    def __init__(self, expressions: list, position: Position):
+    def __init__(self, expressions, position: Position):
         super().__init__(position)
         self.expressions = expressions
 
@@ -71,5 +71,10 @@ class GreaterExpression(BinaryExpression):
 
 
 class GreaterEqualExpression(BinaryExpression):
+    def __init__(self, left, right, position: Position):
+        super().__init__(left, right, position)
+
+
+class AssignmentExpression(BinaryExpression):
     def __init__(self, left, right, position: Position):
         super().__init__(left, right, position)
