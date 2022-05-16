@@ -1,3 +1,5 @@
+from copy import copy
+
 from utils.position import Position
 
 
@@ -7,6 +9,9 @@ class Node:
 
     def __repr__(self):
         return self.__class__.__name__
+
+    def get_position(self):
+        return copy(self.position)
 
 
 class Program(Node):

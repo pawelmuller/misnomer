@@ -159,7 +159,7 @@ class Parser:
             if len(expressions) == 1:
                 return first_expression
             else:
-                return expression_class(expressions, self.get_current_token_position())
+                return expression_class(expressions, first_expression.get_position())
 
     def parse_or_expression(self):
         return self.parse_expression(self.parse_and_expression, TokenType.OR, OrExpression)
@@ -174,7 +174,7 @@ class Parser:
                     raise MisnomerParserNoSecondRelationalExpressionException(self._current_token.get_type(),
                                                                               self.get_current_token_position())
                 expression_class = RELATIONAL_EXPRESSIONS.get(expression_operator.get_type())
-                return expression_class(first_expression, second_expression, self.get_current_token_position())
+                return expression_class(first_expression, second_expression, first_expression.get_position())
             return first_expression
 
     def parse_additive_expression(self):
@@ -192,7 +192,7 @@ class Parser:
             if len(expressions) == 1:
                 return first_expression
             else:
-                return AdditiveExpression(expressions, self.get_current_token_position())
+                return AdditiveExpression(expressions, first_expression.get_position())
         return self.parse_expression(self.parse_multiplicative_expression, ADDITIVE_OPERATORS, AdditiveExpression)
 
     def parse_multiplicative_expression(self):
@@ -210,7 +210,7 @@ class Parser:
         if operator:
             if not expression:
                 raise MisnomerParserNoExpressionException(operator.get_type(), operator.get_position())
-            return NotExpression(expression, self.get_current_token_position())
+            return NotExpression(expression, operator.get_position())
         return expression
 
     def parse_parenthesized_operation(self):
@@ -276,6 +276,8 @@ class Parser:
                 if value := self.parse_or_expression():
                     return VariableInitialisationStatement(identifier.get_value(), value, variable_type,
                                                            identifier.get_position())
+            return VariableInitialisationStatement(identifier.get_value(), None, variable_type,
+                                                   identifier.get_position())
 
     def parse_identifier_statement(self):
         if identifier_token := self.consume_token(TokenType.IDENTIFIER, strict=False):
