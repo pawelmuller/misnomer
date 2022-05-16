@@ -4,12 +4,38 @@ from lexer.lexer import Lexer
 from parser.parser import Parser
 from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoFunctionStatementBlockException, MisnomerParserNoIfStatementBlockException
+from parser.syntax_tree.expressions import EqualExpression, NotEqualExpression, NotExpression
+from parser.syntax_tree.literals import NumericLiteral
+from parser.syntax_tree.statements import IfStatement, Condition, Identifier, ReturnStatement, StatementBlock, \
+    FunctionCall
+from utils.position import Position
 from utils.source_reader.source_reader import StringSourceReader
 
 
 class TestParser:
-    def test_one(self):
-        assert 1 == 1
+    def test_if_statement_1(self):
+        function_code = "if (something == something_different) return x;"
+        correct_statement = IfStatement(
+            condition=Condition(
+                EqualExpression(
+                    Identifier("something", Position(1, 5, 5)),
+                    Identifier("something_different", Position(1, 18, 18)),
+                    Position(1, 5, 5)
+                ),
+                Position(1, 4, 4)
+            ),
+            instructions=ReturnStatement(Identifier("x", Position(1, 46, 46)), Position(1, 39, 39)),
+            else_statement=None,
+            position=Position(1, 1, 1)
+        )
+
+        with StringSourceReader(function_code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+
+            statement = parser.parse_statement()
+
+        assert statement == correct_statement
 
 
 class TestParserExceptions:
@@ -103,12 +129,3 @@ class TestParserExceptions:
             with pytest.raises(MisnomerParserNoFunctionStatementBlockException):
                 parser.parse_program()
 
-    # def test_no_if_statement_block_1(self):
-    #     function_code = "if (something == nothing)"
-    #
-    #     with StringSourceReader(function_code) as source:
-    #         lexer = Lexer(source)
-    #         parser = Parser(lexer)
-    #
-    #         with pytest.raises(MisnomerParserNoIfStatementBlockException):
-    #             parser.parse_program()
