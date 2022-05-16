@@ -87,3 +87,13 @@ class AssignmentStatement(Statement):
         super().__init__(position)
         self.name = name
         self.value = value
+
+
+class BreakStatement(Statement):
+    def __init__(self, position: Position):
+        super().__init__(position)
+
+
+class ContinueStatement(Statement):
+    def __init__(self, position: Position):
+        super().__init__(position)
