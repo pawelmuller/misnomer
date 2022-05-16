@@ -50,6 +50,7 @@ class Identifier(Node):
 class Condition(Node):
     def __init__(self, logic_expression, position: Position):
         super().__init__(position)
+        self.expression = logic_expression
 
 
 class IfStatement(Statement):
@@ -74,11 +75,11 @@ class ReturnStatement(Node):
 
 
 class VariableInitialisationStatement(Statement):
-    def __init__(self, name, value, type: Type, position: Position):
+    def __init__(self, name, value, variable_type: Type, position: Position):
         super().__init__(position)
         self.name = name
         self.value = value
-        self.type = type
+        self.variable_type = variable_type
 
 
 class AssignmentStatement(Statement):
@@ -86,4 +87,3 @@ class AssignmentStatement(Statement):
         super().__init__(position)
         self.name = name
         self.value = value
-
