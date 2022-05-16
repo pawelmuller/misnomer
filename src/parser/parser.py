@@ -62,7 +62,7 @@ class Parser:
                 raise MisnomerParserNoFunctionStatementBlockException(function_name, self.get_current_token_position())
 
             return FunctionDefinition(function_name, function_parameters, TYPES.get(return_type.get_type()),
-                                      statement_block, self.get_current_token_position())
+                                      statement_block, token.get_position())
 
     def parse_parameters(self) -> [FunctionParameter]:
         parameters = []
@@ -81,12 +81,12 @@ class Parser:
             self.consume_token(TokenType.COLON, strict=True)
             parameter_type = self.consume_token(AVAILABLE_VAR_TYPES, strict=True)
             parameter = FunctionParameter(identifier.get_value(), TYPES.get(parameter_type.get_type()),
-                                          self.get_current_token_position())
+                                          identifier.get_position())
             return parameter
 
     def parse_statement_block(self) -> StatementBlock:
-        if self.consume_token(TokenType.CURLY_BRACKET_L, strict=False):
-            statement_block = StatementBlock(self.get_current_token_position())
+        if token := self.consume_token(TokenType.CURLY_BRACKET_L, strict=False):
+            statement_block = StatementBlock(token.get_position())
 
             while statement := self.parse_statement():
                 statement_block.add_statement(statement)
@@ -124,7 +124,7 @@ class Parser:
             return statement
 
     def parse_if_statement(self) -> IfStatement:
-        if self.consume_token(TokenType.IF, strict=False):
+        if token := self.consume_token(TokenType.IF, strict=False):
             condition = self.parse_condition(exception=MisnomerParserNoIfConditionException)
             if not (instructions := self.parse_conditional_instructions()):
                 raise MisnomerParserNoIfInstructionsException(self.get_current_token_position())
@@ -134,7 +134,7 @@ class Parser:
                 if not (else_statement := self.parse_conditional_instructions()):
                     raise MisnomerParserNoElseStatementBlockException(self.get_current_token_position())
 
-            return IfStatement(condition, instructions, else_statement, self.get_current_token_position())
+            return IfStatement(condition, instructions, else_statement, token.get_position())
 
     def parse_condition(self, exception):
         token = self.consume_token(TokenType.ROUND_BRACKET_L, strict=True)
@@ -250,21 +250,21 @@ class Parser:
             return StringLiteral(token.get_value(), token.get_position())
 
     def parse_not_expression(self) -> NotExpression:
-        if self.consume_token(TokenType.NOT, strict=False):
+        if token := self.consume_token(TokenType.NOT, strict=False):
             if not (logic_expression := self.parse_or_expression()):
                 raise MisnomerParserNoExpressionException(self._current_token.get_type(),
                                                           self.get_current_token_position())
-            return NotExpression(logic_expression, self.get_current_token_position())
+            return NotExpression(logic_expression, token.get_position())
         else:
             return self.parse_or_expression()
 
     def parse_while_statement(self):
-        if self.consume_token(TokenType.WHILE, strict=False):
+        if token := self.consume_token(TokenType.WHILE, strict=False):
             condition = self.parse_condition(exception=MisnomerParserNoWhileConditionException)
             if not (instructions := self.parse_conditional_instructions()):
                 raise MisnomerParserNoWhileInstructionsException(self.get_current_token_position())
 
-            return WhileStatement(condition, instructions, self.get_current_token_position())
+            return WhileStatement(condition, instructions, token.get_position())
 
     def parse_variable_initialisation(self):
         if self.consume_token(TokenType.VAR, strict=False):
