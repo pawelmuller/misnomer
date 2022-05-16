@@ -31,10 +31,10 @@ variable_assignment             = variable assignment_operator or_expression ;
 (* Expressions *)
 or_expression                   = and_expression { or_operator and_expression } ;
 and_expression                  = relational_expression { and_operator relational_expression } ;
-relational_expression           = mathematical_expression [ relational_operator mathematical_expression ] ;
-mathematical_expression         = multiplicative_expression { additive_operator multiplicative_expression } ;
-multiplicative_expression       = base_mathematical_expression { multiplicative_operator base_mathematical_expression } ;
-base_mathematical_expression    = [ "-" | unary_operator ] ( parenthesized_operation | value ) ;
+relational_expression           = additive_expression [ relational_operator additive_expression ] ;
+additive_expression             = multiplicative_expression { additive_operator multiplicative_expression } ;
+multiplicative_expression       = base_expression { multiplicative_operator base_expression } ;
+base_expression                 = [ "-" | unary_operator ] ( parenthesized_operation | value ) ;
 parenthesized_operation         = "(" or_expression ")" ;
 identifier_expression           = variable | function_call ;
 

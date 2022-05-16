@@ -10,7 +10,7 @@ from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoIfConditionException, MisnomerParserNoWhileConditionException, \
     MisnomerParserNoExpressionException, MisnomerParserNoWhileInstructionsException, \
     MisnomerParserNoIfInstructionsException, MisnomerParserNoSecondRelationalExpressionException
-from parser.syntax_tree.expressions import AndExpression, NotExpression, LogicExpression, MathematicalExpression, \
+from parser.syntax_tree.expressions import AndExpression, NotExpression, OrExpression, AdditiveExpression, \
     MultiplicativeExpression
 from parser.syntax_tree.literals import NumericLiteral, StringLiteral
 from parser.syntax_tree.statements import FunctionParameter, StatementBlock, IfStatement, FunctionDefinition, \
@@ -140,7 +140,7 @@ class Parser:
 
     def parse_condition(self, exception):
         token = self.consume_token(TokenType.ROUND_BRACKET_L, strict=True)
-        if not (logic_expression := self.parse_logic_expression()):
+        if not (logic_expression := self.parse_or_expression()):
             raise exception(self.get_current_token_position())
         self.consume_token(TokenType.ROUND_BRACKET_R, strict=True)
 
@@ -163,30 +163,29 @@ class Parser:
             else:
                 return expression_class(expressions, self.get_current_token_position())
 
-    def parse_logic_expression(self):
-        return self.parse_expression(self.parse_and_expression, TokenType.OR, LogicExpression)
+    def parse_or_expression(self):
+        return self.parse_expression(self.parse_and_expression, TokenType.OR, OrExpression)
 
     def parse_and_expression(self) -> AndExpression:
         return self.parse_expression(self.parse_relational_expression, TokenType.AND, AndExpression)
 
     def parse_relational_expression(self):
-        if first_expression := self.parse_mathematical_expression():
+        if first_expression := self.parse_additive_expression():
             if expression_operator := self.consume_token(RELATIONAL_OPERATORS, strict=False):
-                if not (second_expression := self.parse_mathematical_expression()):
+                if not (second_expression := self.parse_additive_expression()):
                     raise MisnomerParserNoSecondRelationalExpressionException(self._current_token.get_type(),
                                                                               self.get_current_token_position())
                 expression_class = RELATIONAL_EXPRESSIONS.get(expression_operator.get_type())
                 return expression_class(first_expression, second_expression, self.get_current_token_position())
             return first_expression
 
-    def parse_mathematical_expression(self):
-        return self.parse_expression(self.parse_multiplicative_expression, ADDITIVE_OPERATORS, MathematicalExpression)
+    def parse_additive_expression(self):
+        return self.parse_expression(self.parse_multiplicative_expression, ADDITIVE_OPERATORS, AdditiveExpression)
 
     def parse_multiplicative_expression(self):
-        return self.parse_expression(self.parse_base_mathematical_expression, MULTIPLICATIVE_OPERATORS,
-                                     MultiplicativeExpression)
+        return self.parse_expression(self.parse_base_expression, MULTIPLICATIVE_OPERATORS, MultiplicativeExpression)
 
-    def parse_base_mathematical_expression(self):
+    def parse_base_expression(self):
         operator = self.consume_token(TokenType.SUBTRACT, strict=False) \
                    or self.consume_token(TokenType.NOT, strict=False)
 
@@ -203,7 +202,7 @@ class Parser:
 
     def parse_parenthesized_operation(self):
         if self.consume_token(TokenType.ROUND_BRACKET_L, strict=False):
-            logic_expression = self.parse_logic_expression()
+            logic_expression = self.parse_or_expression()
             self.consume_token(TokenType.ROUND_BRACKET_R, strict=True)
             return logic_expression
 
@@ -239,12 +238,12 @@ class Parser:
 
     def parse_not_expression(self) -> NotExpression:
         if self.consume_token(TokenType.NOT, strict=False):
-            if not (logic_expression := self.parse_logic_expression()):
+            if not (logic_expression := self.parse_or_expression()):
                 raise MisnomerParserNoExpressionException(self._current_token.get_type(),
                                                           self.get_current_token_position())
             return NotExpression(logic_expression, self.get_current_token_position())
         else:
-            return self.parse_logic_expression()
+            return self.parse_or_expression()
 
     def parse_while_statement(self):
         if self.consume_token(TokenType.WHILE, strict=False):
@@ -260,18 +259,18 @@ class Parser:
             self.consume_token(TokenType.COLON, strict=True)
             self.consume_token(AVAILABLE_VAR_TYPES, strict=True)
             if self.consume_token(TokenType.ASSIGNMENT, strict=False):
-                if value := self.parse_logic_expression():
+                if value := self.parse_or_expression():
                     return VariableInitialisationStatement(identifier.get_value(), value, identifier.get_position())
 
     def parse_variable_assignment(self):
         if identifier := self.consume_token(TokenType.IDENTIFIER, strict=False):
             if self.consume_token(TokenType.ASSIGNMENT, strict=False):
-                if value := self.parse_logic_expression():
+                if value := self.parse_or_expression():
                     return AssignmentStatement(identifier.get_value(), value, identifier.get_position())
 
     def parse_return_statement(self):
         if token := self.consume_token(TokenType.RETURN, strict=False):
-            if node := self.parse_logic_expression():
+            if node := self.parse_or_expression():
                 pass
 
             return ReturnStatement(node, token.get_position())
@@ -291,10 +290,10 @@ class Parser:
 
     def parse_call_arguments(self):
         arguments = []
-        if argument := self.parse_logic_expression():
+        if argument := self.parse_or_expression():
             arguments.append(argument)
 
             while self.consume_token(TokenType.COMA, strict=False) is not None:
-                arguments.append(self.parse_logic_expression())
+                arguments.append(self.parse_or_expression())
 
         return arguments
