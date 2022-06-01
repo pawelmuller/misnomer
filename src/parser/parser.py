@@ -271,7 +271,7 @@ class Parser:
             return WhileStatement(condition, instructions, token.get_position())
 
     def parse_variable_initialisation(self):
-        if self.consume_token(TokenType.VAR, strict=False):
+        if var_token := self.consume_token(TokenType.VAR, strict=False):
             identifier = self.consume_token(TokenType.IDENTIFIER, strict=True)
             self.consume_token(TokenType.COLON, strict=True)
             type_token = self.consume_token(AVAILABLE_VAR_TYPES, strict=True)
@@ -279,7 +279,7 @@ class Parser:
             if self.consume_token(TokenType.ASSIGNMENT, strict=False):
                 if value := self.parse_or_expression():
                     return VariableInitialisationStatement(identifier.get_value(), value, variable_type,
-                                                           identifier.get_position())
+                                                           var_token.get_position())
             return VariableInitialisationStatement(identifier.get_value(), None, variable_type,
                                                    identifier.get_position())
 

@@ -6,10 +6,12 @@ from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoFunctionStatementBlockException, MisnomerParserFunctionNameDuplicateException, \
     MisnomerParserFunctionParameterNameDuplicateException
 from parser.syntax_tree.expressions import EqualExpression, NotEqualExpression, NotExpression, GreaterEqualExpression, \
-    OrExpression, AndExpression
+    OrExpression, AndExpression, AdditiveExpression, MultiplicativeExpression
 from parser.syntax_tree.literals import NumericLiteral
 from parser.syntax_tree.statements import IfStatement, Condition, Identifier, ReturnStatement, StatementBlock, \
-    FunctionCall, WhileStatement, AssignmentStatement, ContinueStatement, BreakStatement
+    FunctionCall, WhileStatement, AssignmentStatement, ContinueStatement, BreakStatement, \
+    VariableInitialisationStatement
+from parser.types import Type
 from utils.position import Position
 from utils.source_reader.source_reader import StringSourceReader
 
@@ -102,6 +104,62 @@ class TestParser:
             instructions=instructions_statement_block,
             else_statement=None,
             position=Position(1, 1, 1)
+        )
+
+        with StringSourceReader(function_code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+
+            statement = parser.parse_statement()
+
+        assert statement == correct_statement
+
+    def test_complex_addition(self):
+        function_code = "var a: int = 2 + 2 * 2 + 2;"
+
+        correct_statement = VariableInitialisationStatement(
+            name="a",
+            position=Position(1, 1, 1),
+            variable_type=Type.INT,
+            value=AdditiveExpression(
+                [
+                    NumericLiteral(2, Position(1, 14, 14)),
+                    MultiplicativeExpression([
+                        NumericLiteral(2, Position(1, 18, 18)),
+                        NumericLiteral(2, Position(1, 22, 22)),
+                    ], Position(1, 18, 18)),
+                    NumericLiteral(2, Position(1, 26, 26))
+                ],
+                Position(1, 14, 14)
+            )
+        )
+
+        with StringSourceReader(function_code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+
+            statement = parser.parse_statement()
+
+        assert statement == correct_statement
+
+    def test_complex_multiplication(self):
+        function_code = "var a: int = 2 * 2 * 2 + 2;"
+
+        correct_statement = VariableInitialisationStatement(
+            name="a",
+            position=Position(1, 1, 1),
+            variable_type=Type.INT,
+            value=AdditiveExpression(
+                [
+                    MultiplicativeExpression([
+                        NumericLiteral(2, Position(1, 14, 14)),
+                        NumericLiteral(2, Position(1, 18, 18)),
+                        NumericLiteral(2, Position(1, 22, 22)),
+                    ], Position(1, 14, 14)),
+                    NumericLiteral(2, Position(1, 26, 26))
+                ],
+                Position(1, 14, 14)
+            )
         )
 
         with StringSourceReader(function_code) as source:
