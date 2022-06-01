@@ -294,10 +294,9 @@ class Parser:
 
     def parse_return_statement(self):
         if token := self.consume_token(TokenType.RETURN, strict=False):
-            if node := self.parse_or_expression():
-                pass
+            expression = self.parse_or_expression()
 
-            return ReturnStatement(node, token.get_position())
+            return ReturnStatement(expression, token.get_position())
 
     def parse_loop_control_statement(self):
         if token := self.consume_token(TokenType.BREAK, strict=False):
