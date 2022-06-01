@@ -317,7 +317,9 @@ class Parser:
         if argument := self.parse_or_expression():
             arguments.append(argument)
 
-            while self.consume_token(TokenType.COMA, strict=False) is not None:
-                arguments.append(self.parse_or_expression())
+            while token := self.consume_token(TokenType.COMA, strict=False) is not None:
+                if (expression := self.parse_or_expression()) is None:
+                    raise MisnomerParserNoExpressionException(token.get_type(), token.get_position())
+                arguments.append(expression)
 
         return arguments
