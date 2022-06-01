@@ -37,6 +37,44 @@ class TestParser:
 
         assert statement == correct_statement
 
+    def test_if_statement_2(self):
+        function_code = "if (something != -2) { return x; } else { fibonacci(something); }"
+        else_statement_block = StatementBlock(Position(1, 41, 41))
+        else_statement_block.add_statement(
+            FunctionCall(
+                identifier="fibonacci",
+                arguments=[Identifier("something", Position(1, 53, 53))],
+                position=Position(1, 43, 43),
+            ))
+        instructions_statement_block = StatementBlock(Position(1, 22, 22))
+        instructions_statement_block.add_statement(
+            ReturnStatement(Identifier("x", Position(1, 31, 31)), Position(1, 24, 24))
+        )
+        correct_statement = IfStatement(
+            condition=Condition(
+                NotEqualExpression(
+                    Identifier("something", Position(1, 5, 5)),
+                    NotExpression(
+                        NumericLiteral(2, Position(1, 19, 19)),
+                        Position(1, 18, 18)
+                    ),
+                    Position(1, 5, 5)
+                ),
+                Position(1, 4, 4)
+            ),
+            instructions=instructions_statement_block,
+            else_statement=else_statement_block,
+            position=Position(1, 1, 1)
+        )
+
+        with StringSourceReader(function_code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+
+            statement = parser.parse_statement()
+
+        assert statement == correct_statement
+
 
 class TestParserExceptions:
     def test_unexpected_token_1(self):
