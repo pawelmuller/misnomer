@@ -5,7 +5,8 @@ from parser.parser import Parser
 from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoFunctionStatementBlockException, MisnomerParserFunctionNameDuplicateException, \
     MisnomerParserFunctionParameterNameDuplicateException
-from parser.syntax_tree.expressions import EqualExpression, NotEqualExpression, NotExpression, GreaterEqualExpression
+from parser.syntax_tree.expressions import EqualExpression, NotEqualExpression, NotExpression, GreaterEqualExpression, \
+    OrExpression, AndExpression
 from parser.syntax_tree.literals import NumericLiteral
 from parser.syntax_tree.statements import IfStatement, Condition, Identifier, ReturnStatement, StatementBlock, \
     FunctionCall, WhileStatement, AssignmentStatement, ContinueStatement, BreakStatement
@@ -65,6 +66,41 @@ class TestParser:
             ),
             instructions=instructions_statement_block,
             else_statement=else_statement_block,
+            position=Position(1, 1, 1)
+        )
+
+        with StringSourceReader(function_code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+
+            statement = parser.parse_statement()
+
+        assert statement == correct_statement
+
+    def test_complex_condition(self):
+        function_code = "if (something != -2 and sth() and oth() or 1 == 2) { return; }"
+        instructions_statement_block = StatementBlock(Position(1, 52, 52))
+        instructions_statement_block.add_statement(
+            ReturnStatement(None, Position(1, 54, 54))
+        )
+        correct_statement = IfStatement(
+            condition=Condition(
+                OrExpression([
+                    AndExpression([
+                        NotEqualExpression(
+                            Identifier("something", Position(1, 5, 5)),
+                            NotExpression(NumericLiteral(2, Position(1, 19, 19)), Position(1, 18, 18)),
+                            Position(1, 5, 5)
+                        ),
+                        FunctionCall("sth", [], Position(1, 25, 25)),
+                        FunctionCall("oth", [], Position(1, 35, 35))
+                    ], Position(1, 5, 5)),
+                    EqualExpression(NumericLiteral(1, Position(1, 44, 44)), NumericLiteral(2, Position(1, 49, 49)),
+                                    Position(1, 44, 44))], Position(1, 5, 5)
+                ), Position(1, 4, 4)
+            ),
+            instructions=instructions_statement_block,
+            else_statement=None,
             position=Position(1, 1, 1)
         )
 
