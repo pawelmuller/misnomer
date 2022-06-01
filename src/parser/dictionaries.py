@@ -13,10 +13,6 @@ TYPES = {
     TokenType.NOTHING: Type.NOTHING
 }
 
-RELATIONAL_OPERATORS = (TokenType.EQUAL, TokenType.NOT_EQUAL,
-                        TokenType.LESS, TokenType.LESS_EQUAL,
-                        TokenType.GREATER, TokenType.GREATER_EQUAL)
-
 RELATIONAL_EXPRESSIONS = {
     TokenType.EQUAL: EqualExpression,
     TokenType.NOT_EQUAL: NotEqualExpression,

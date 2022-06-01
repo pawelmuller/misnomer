@@ -3,7 +3,7 @@ from copy import copy
 from lexer.lexer import Lexer
 from lexer.token.token import Token
 from lexer.token.token_type import TokenType
-from parser.dictionaries import TYPES, AVAILABLE_VAR_TYPES, AVAILABLE_FUNCTION_TYPES, RELATIONAL_OPERATORS, \
+from parser.dictionaries import TYPES, AVAILABLE_VAR_TYPES, AVAILABLE_FUNCTION_TYPES, \
     RELATIONAL_EXPRESSIONS, ADDITIVE_OPERATORS, MULTIPLICATIVE_OPERATORS
 from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoFunctionStatementBlockException, MisnomerParserNoElseStatementBlockException, \
@@ -169,7 +169,7 @@ class Parser:
 
     def parse_relational_expression(self):
         if first_expression := self.parse_additive_expression():
-            if expression_operator := self.consume_token(RELATIONAL_OPERATORS, strict=False):
+            if expression_operator := self.consume_token(RELATIONAL_EXPRESSIONS.keys(), strict=False):
                 if not (second_expression := self.parse_additive_expression()):
                     raise MisnomerParserNoSecondRelationalExpressionException(self._current_token.get_type(),
                                                                               self.get_current_token_position())
