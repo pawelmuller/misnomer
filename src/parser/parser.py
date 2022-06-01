@@ -74,7 +74,7 @@ class Parser:
                 parameter = self.parse_parameter(strict=True)
                 parameters.append(parameter)
 
-            return parameters
+        return parameters
 
     def parse_parameter(self, *, strict: bool = False) -> FunctionParameter:
         if identifier := self.consume_token(TokenType.IDENTIFIER, strict=strict):
@@ -193,7 +193,6 @@ class Parser:
                 return first_expression
             else:
                 return AdditiveExpression(expressions, first_expression.get_position())
-        return self.parse_expression(self.parse_multiplicative_expression, ADDITIVE_OPERATORS, AdditiveExpression)
 
     def parse_multiplicative_expression(self):
         return self.parse_expression(self.parse_base_expression, MULTIPLICATIVE_OPERATORS, MultiplicativeExpression)
