@@ -9,7 +9,8 @@ from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoFunctionStatementBlockException, MisnomerParserNoElseStatementBlockException, \
     MisnomerParserNoIfConditionException, MisnomerParserNoWhileConditionException, \
     MisnomerParserNoExpressionException, MisnomerParserNoWhileInstructionsException, \
-    MisnomerParserNoIfInstructionsException, MisnomerParserNoSecondRelationalExpressionException
+    MisnomerParserNoIfInstructionsException, MisnomerParserNoSecondRelationalExpressionException, \
+    MisnomerParserFunctionParameterNameDuplicateException
 from parser.syntax_tree.expressions import AndExpression, NotExpression, OrExpression, AdditiveExpression, \
     MultiplicativeExpression
 from parser.syntax_tree.literals import NumericLiteral, StringLiteral
@@ -65,14 +66,18 @@ class Parser:
                                       statement_block, token.get_position())
 
     def parse_parameters(self) -> [FunctionParameter]:
-        parameters = []
+        parameters: dict[str, FunctionParameter] = {}
 
         if first_parameter := self.parse_parameter(strict=False):
-            parameters.append(first_parameter)
+            parameters[first_parameter.get_name()] = first_parameter
 
             while self.consume_token(TokenType.COMA, strict=False):
                 parameter = self.parse_parameter(strict=True)
-                parameters.append(parameter)
+                parameter_name = parameter.get_name()
+                if parameter_name in parameters:
+                    raise MisnomerParserFunctionParameterNameDuplicateException(parameter_name,
+                                                                                parameter.get_position())
+                parameters[parameter_name] = parameter
 
         return parameters
 

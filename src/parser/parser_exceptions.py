@@ -130,3 +130,10 @@ class MisnomerParserFunctionNameDuplicateException(MisnomerParserException):
     def __init__(self, function_name: str, position: Position):
         message = f"Duplicate function name: {function_name}."
         super(MisnomerParserFunctionNameDuplicateException, self).__init__(position, message, give_position=True)
+
+
+class MisnomerParserFunctionParameterNameDuplicateException(MisnomerParserException):
+    def __init__(self, parameter_name: str, position: Position):
+        message = f"Duplicate function parameter name: {parameter_name}."
+        super(MisnomerParserFunctionParameterNameDuplicateException, self).__init__(position, message,
+                                                                                    give_position=True)

@@ -27,6 +27,9 @@ class FunctionParameter(Node):
         self.name = name
         self.argument_type = argument_type
 
+    def get_name(self):
+        return self.name
+
     def __eq__(self, other):
         super_eq = super().__eq__(other)
         return super_eq and self.name == other.name and self.argument_type == other.argument_type
