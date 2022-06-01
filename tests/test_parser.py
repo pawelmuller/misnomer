@@ -3,7 +3,7 @@ import pytest
 from lexer.lexer import Lexer
 from parser.parser import Parser
 from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
-    MisnomerParserNoFunctionStatementBlockException
+    MisnomerParserNoFunctionStatementBlockException, MisnomerParserFunctionNameDuplicateException
 from parser.syntax_tree.expressions import EqualExpression, NotEqualExpression, NotExpression, GreaterEqualExpression
 from parser.syntax_tree.literals import NumericLiteral
 from parser.syntax_tree.statements import IfStatement, Condition, Identifier, ReturnStatement, StatementBlock, \
@@ -229,4 +229,20 @@ class TestParserExceptions:
             parser = Parser(lexer)
 
             with pytest.raises(MisnomerParserNoFunctionStatementBlockException):
+                parser.parse_program()
+
+    def test_function_name_duplication(self):
+        code = """
+            fibonacci(n: int) returns int {
+                return;
+            }
+            fibonacci(n: int) returns int {
+                return;
+            }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+
+            with pytest.raises(MisnomerParserFunctionNameDuplicateException):
                 parser.parse_program()

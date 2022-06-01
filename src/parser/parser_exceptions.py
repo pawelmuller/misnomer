@@ -124,3 +124,9 @@ class MisnomerParserNoNumericLiteral(MisnomerParserNoLiteral):
     def __init__(self, position: Position):
         details = f"numeric"
         super(MisnomerParserNoNumericLiteral, self).__init__(details, position)
+
+
+class MisnomerParserFunctionNameDuplicateException(MisnomerParserException):
+    def __init__(self, function_name: str, position: Position):
+        message = f"Duplicate function name: {function_name}."
+        super(MisnomerParserFunctionNameDuplicateException, self).__init__(position, message, give_position=True)

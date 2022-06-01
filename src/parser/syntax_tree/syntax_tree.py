@@ -1,5 +1,6 @@
 from copy import copy
 
+from parser.parser_exceptions import MisnomerParserFunctionNameDuplicateException
 from utils.position import Position
 
 
@@ -20,10 +21,13 @@ class Node:
 class Program(Node):
     def __init__(self):
         super().__init__(Position())
-        self.function_definitions = []
+        self.function_definitions: dict = {}
 
     def add_function_definition(self, function_definition):
-        self.function_definitions.append(function_definition)
+        function_name = function_definition.get_name()
+        if function_name in self.function_definitions:
+            raise MisnomerParserFunctionNameDuplicateException(function_name, function_definition.get_position())
+        self.function_definitions[function_name] = function_definition
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)

@@ -41,6 +41,9 @@ class FunctionDefinition(Node):
         self.return_type = return_type
         self.statement_block = statement_block
 
+    def get_name(self):
+        return self.name
+
     def __eq__(self, other):
         super_eq = super().__eq__(other)
         attributes_eq_1 = self.name == other.name and self.arguments == other.arguments
