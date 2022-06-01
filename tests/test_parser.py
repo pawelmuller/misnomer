@@ -4,10 +4,10 @@ from lexer.lexer import Lexer
 from parser.parser import Parser
 from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoFunctionStatementBlockException, MisnomerParserNoIfStatementBlockException
-from parser.syntax_tree.expressions import EqualExpression, NotEqualExpression, NotExpression
+from parser.syntax_tree.expressions import EqualExpression, NotEqualExpression, NotExpression, GreaterEqualExpression
 from parser.syntax_tree.literals import NumericLiteral
 from parser.syntax_tree.statements import IfStatement, Condition, Identifier, ReturnStatement, StatementBlock, \
-    FunctionCall
+    FunctionCall, WhileStatement, AssignmentStatement
 from utils.position import Position
 from utils.source_reader.source_reader import StringSourceReader
 
@@ -64,6 +64,37 @@ class TestParser:
             ),
             instructions=instructions_statement_block,
             else_statement=else_statement_block,
+            position=Position(1, 1, 1)
+        )
+
+        with StringSourceReader(function_code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+
+            statement = parser.parse_statement()
+
+        assert statement == correct_statement
+
+    def test_while_statement(self):
+        function_code = "while (something >= -9.2) { x = 10; }"
+
+        instructions_statement_block = StatementBlock(Position(1, 27, 27))
+        instructions_statement_block.add_statement(
+            AssignmentStatement("x", NumericLiteral(10, Position(1, 33, 33)), Position(1, 29, 29)),
+        )
+        correct_statement = WhileStatement(
+            condition=Condition(
+                GreaterEqualExpression(
+                    Identifier("something", Position(1, 8, 8)),
+                    NotExpression(
+                        NumericLiteral(9.2, Position(1, 22, 22)),
+                        Position(1, 21, 21)
+                    ),
+                    Position(1, 8, 8)
+                ),
+                Position(1, 7, 7)
+            ),
+            instructions=instructions_statement_block,
             position=Position(1, 1, 1)
         )
 
