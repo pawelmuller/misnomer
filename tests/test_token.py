@@ -21,6 +21,8 @@ class TestToken:
         assert token.get_position() == Position(1, 1, 1)
         assert token.get_value() == "Something"
 
+
+class TestTokenExceptions:
     def test_token_value_and_type_check(self):
         with pytest.raises(MisnomerTokenInappropriateTypeException):
             Token("Something", Position(1, 1, 1), TokenType.NUMERIC_LITERAL)
@@ -36,4 +38,3 @@ class TestToken:
     def test_token_value_and_type_check_4(self):
         with pytest.raises(MisnomerTokenInappropriateTypeException):
             Token(155.3746, Position(1, 1, 1), TokenType.COLON)
-
