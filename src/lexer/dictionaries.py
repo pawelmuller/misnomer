@@ -50,7 +50,9 @@ KEYWORD_TOKENS = {
     "nothing": TokenType.NOTHING,
     "or": TokenType.OR,
     "and": TokenType.AND,
-    "not": TokenType.NOT
+    "not": TokenType.NOT,
+    "break": TokenType.BREAK,
+    "continue": TokenType.CONTINUE
 }
 
 ESCAPE_CHARACTERS = {

@@ -44,6 +44,10 @@ class TestLexerTokenAssignments:
                     var b: int = fibonacci(n-2);
                     return a+b;
                 }
+                while(1) {
+                    continue;
+                    break;
+                }
             }
         """
         correct_tokens = [TokenType.IDENTIFIER, TokenType.ROUND_BRACKET_L, TokenType.IDENTIFIER, TokenType.COLON,
@@ -59,6 +63,9 @@ class TestLexerTokenAssignments:
                           TokenType.IDENTIFIER, TokenType.ROUND_BRACKET_L, TokenType.IDENTIFIER, TokenType.SUBTRACT,
                           TokenType.NUMERIC_LITERAL, TokenType.ROUND_BRACKET_R, TokenType.SEMICOLON, TokenType.RETURN,
                           TokenType.IDENTIFIER, TokenType.ADD, TokenType.IDENTIFIER, TokenType.SEMICOLON,
+                          TokenType.CURLY_BRACKET_R, TokenType.WHILE, TokenType.ROUND_BRACKET_L,
+                          TokenType.NUMERIC_LITERAL, TokenType.ROUND_BRACKET_R, TokenType.CURLY_BRACKET_L,
+                          TokenType.CONTINUE, TokenType.SEMICOLON, TokenType.BREAK, TokenType.SEMICOLON,
                           TokenType.CURLY_BRACKET_R, TokenType.CURLY_BRACKET_R, TokenType.EOF]
 
         with StringSourceReader(function_code) as source:

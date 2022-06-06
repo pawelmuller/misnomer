@@ -9,6 +9,8 @@ class TokenType(Enum):
     RETURN = auto()             # return
     RETURNS = auto()            # returns
     VAR = auto()                # var
+    BREAK = auto()              # break
+    CONTINUE = auto()           # continue
 
     # Identifier
     IDENTIFIER = auto()

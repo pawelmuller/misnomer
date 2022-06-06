@@ -3,42 +3,47 @@
 program                         = { function_definition } ;
 
 (* Statements *)
-statement_block                 = "{" { variable_initialisation | statement | "break" ";" | "continue" ";" } "}" ;
-if_statement                    = if_keyword "(" logic_expression ")" ( statement_block | statement )
-                                  [ else_keyword ( statement_block | statement ) ] ;
-while_statement                 = while_keyword "(" logic_expression ")" ( statement_block | statement ) ;
-return_statement                = return_keyword [ logic_expression ] ";" ;
-statement                       = if_statement | while_statement | return_statement | function_call ";" ;
+statement_block                 = "{" { statement } "}" ;
+if_statement                    = if_keyword condition conditional_instructions [ else_keyword conditional_instructions ] ;
+while_statement                 = while_keyword condition conditional_instructions ;
+condition                       = "(" or_expression ")" ;
+conditional_instructions        = ( statement_block | statement ) ;
+return_statement                = return_keyword [ or_expression ] ;
+loop_control_statement          = ( break_keyword | continue_keyword) ;
+statement                       = statements_with_block | ( statements_without_block instruction_end_character ) ;
+statements_with_block           = if_statement | while_statement ;
+statements_without_block        = variable_initialisation | return_statement | loop_control_statement |
+                                  identifier_statement ;
+identifier_statement            = variable_assignment | function_call ;
 
 (* Functions *)
 function_call                   = identifier "(" function_arguments ")" ;
-function_arguments              = [ logic_expression { "," logic_expression } ] ;
+function_arguments              = [ or_expression { "," or_expression } ] ;
 function_definition             = identifier "(" function_parameters ")"
-                                  "returns_keyword" function_types statement_block ;
+                                  returns_keyword function_types statement_block ;
 function_parameters             = [ function_parameter { "," function_parameter } ] ;
 function_parameter              = identifier ":" types ;
 
 (* Variables *)
-variable_initialisation         = variable_keyword ( numeric_variable_initialisation | string_variable_initialisation ) ;
-string_variable_initialisation  = identifier ":" string_type [ assignment_operator string_literal ] ;
-numeric_variable_initialisation = identifier ":" numeric_types [ assignment_operator numeric_literal ] ;
-variable_assignment             = variable assignment_operator expression ;
+variable_initialisation         = variable_keyword identifier ":" ( string_type | numeric_types )
+                                  [ assignment_operator or_expression ];
+variable_assignment             = variable assignment_operator or_expression ;
 
 (* Expressions *)
-mathematical_expression         = multiplicative_expression { additive_operator multiplicative_expression } ;
-logic_expression                = and_expression { or_operator and_expression } ;
-relational_expression           = mathematical_expression [ relational_operator mathematical_expression ] ;
-expression                      = numeric_literal | string_literal ;
-
-(* Expressions helpers *)
-multiplicative_expression       = base_mathematical_expression { multiplicative_operator base_mathematical_expression } ;
-base_mathematical_expression    = [ "-" | unary_operator ] ( value | "(" logic_expression ")" ) ;
+or_expression                   = and_expression { or_operator and_expression } ;
 and_expression                  = relational_expression { and_operator relational_expression } ;
+relational_expression           = additive_expression [ relational_operator additive_expression ] ;
+additive_expression             = multiplicative_expression { additive_operator multiplicative_expression } ;
+multiplicative_expression       = base_expression { multiplicative_operator base_expression } ;
+base_expression                 = [ "-" | unary_operator ] ( parenthesized_operation | value ) ;
+parenthesized_operation         = "(" or_expression ")" ;
+identifier_expression           = variable | function_call ;
 
 (* Base structures *)
-value                           = numeric_literal | string_literal | variable | function_call ;
+value                           = literal | identifier_expression ;
+literal                         = numeric_literal | string_literal ;
 numeric_literal                 = ( non_zero_digit { digit } | zero_digit ) { "." digit { digit } } ;
-string_literal                  = '"' , { all_characters − '"' } , '"' ;
+string_literal                  = '"' | "'" { all_characters − '"' | "'" } '"' | "'" ;
 variable                        = identifier ;
 identifier                      = letter { digit | letter } ;
 
@@ -60,6 +65,8 @@ returns_keyword                 = "returns" ;
 if_keyword                      = "if" ;
 else_keyword                    = "else" ;
 while_keyword                   = "while" ;
+break_keyword                   = "break" ;
+continue_keyword                = "continue" ;
 
 (* Types *)
 types                           = integer_type | float_type | string_type ;
@@ -75,5 +82,6 @@ letter                          = "a".."z" | "A".."Z" ;
 digit                           = zero_digit | non_zero_digit ;
 non_zero_digit                  = "1".."9" ;
 zero_digit                      = "0" ;
+instruction_end_character       = ";" ;
 whitespace                      = ? white space characters ? ;
 all_characters                  = ? all visible characters ? ;

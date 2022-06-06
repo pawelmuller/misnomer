@@ -3,7 +3,7 @@ from termcolor import colored
 
 class MisnomerException(Exception):
     def __init__(self, message, *args, **kwargs):
-        self.message = colored(f"{' Encountered error ':=^80}\n{message}", "red")
+        self.message = colored(f"\n{' Encountered error ':=^80}\n{message}", "red")
         super(MisnomerException, self).__init__(self.message)
 
 
