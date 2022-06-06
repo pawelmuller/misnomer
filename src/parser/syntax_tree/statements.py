@@ -1,5 +1,5 @@
 from interpreter.interpreter_exceptions import MisnomerInterpreterDeclarationException, \
-    MisnomerInterpreterArgumentsNumberDoesNotMatchException
+    MisnomerInterpreterArgumentsNumberDoesNotMatchException, MisnomerInterpreterFunctionDoesNotExistException
 from parser.syntax_tree.syntax_tree import Node
 from parser.types import Type
 from utils.position import Position
@@ -84,6 +84,16 @@ class FunctionCall(Node):
         super().__init__(position)
         self.identifier = identifier
         self.arguments = arguments
+
+    def execute(self, context):
+        args = [arg.execute(context) for arg in self.arguments]
+
+        if function := context.get_function(self.identifier):
+            if isinstance(function, FunctionDefinition):
+                args = [context, *args]
+            return function(*args)
+        else:
+            raise MisnomerInterpreterFunctionDoesNotExistException(self.identifier, self.position)
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)

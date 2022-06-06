@@ -29,3 +29,9 @@ class MisnomerInterpreterArgumentsNumberDoesNotMatchException(MisnomerInterprete
         message += f"Expected: {expected_arguments_number}, got: {got_arguments_number}."
         super(MisnomerInterpreterArgumentsNumberDoesNotMatchException, self).__init__(position, message,
                                                                                       give_position=False)
+
+
+class MisnomerInterpreterFunctionDoesNotExistException(MisnomerInterpreterException):
+    def __init__(self, name: str, position: Position):
+        message = f"Function {name} does exist.\n"
+        super(MisnomerInterpreterFunctionDoesNotExistException, self).__init__(position, message, give_position=True)
