@@ -16,9 +16,17 @@ class StatementBlock(Node):
     def add_statement(self, statement):
         self.statements.append(statement)
 
+    def execute(self, context):
+        for statement in self.statements:
+            if exit_code := statement.execute(context):
+                return exit_code
+
     def __eq__(self, other):
         super_eq = super().__eq__(other)
         return super_eq and self.statements == other.statements
+
+    def __repr__(self):
+        return super().__repr__() + ': '.join([str(node) for node in self.statements])
 
 
 class FunctionParameter(Node):

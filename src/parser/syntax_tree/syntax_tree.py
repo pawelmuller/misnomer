@@ -1,5 +1,6 @@
 from copy import copy
 
+from interpreter.interpreter_exceptions import MisnomerInterpreterNoMainFunctionException
 from parser.parser_exceptions import MisnomerParserFunctionNameDuplicateException
 from utils.position import Position
 
@@ -29,7 +30,13 @@ class Program(Node):
             raise MisnomerParserFunctionNameDuplicateException(function_name, function_definition.get_position())
         self.function_definitions[function_name] = function_definition
 
+    def execute(self, context):
+        if main := context.functions.get("main"):
+            if (exit_code := main.statement_block.execute(context)) is not None:
+                return exit_code
+            return 0
+        raise MisnomerInterpreterNoMainFunctionException(self.position)
+
     def __eq__(self, other):
         super_eq = super().__eq__(other)
         return super_eq and self.function_definitions == other.function_definitions
-
