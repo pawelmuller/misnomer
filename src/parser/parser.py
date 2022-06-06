@@ -12,7 +12,7 @@ from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoIfInstructionsException, MisnomerParserNoSecondRelationalExpressionException, \
     MisnomerParserFunctionParameterNameDuplicateException
 from parser.syntax_tree.expressions import AndExpression, NotExpression, OrExpression, AdditiveExpression, \
-    MultiplicativeExpression
+    MultiplicativeExpression, AdditiveInvertedExpression, MultiplicativeInvertedExpression
 from parser.syntax_tree.literals import NumericLiteral, StringLiteral
 from parser.syntax_tree.statements import FunctionParameter, StatementBlock, IfStatement, FunctionDefinition, \
     Condition, WhileStatement, FunctionCall, Identifier, VariableInitialisationStatement, AssignmentStatement, \
@@ -190,7 +190,7 @@ class Parser:
                     raise MisnomerParserNoExpressionException(self._current_token.get_type(),
                                                               self.get_current_token_position())
                 if operator.get_type() == TokenType.SUBTRACT:
-                    expression = NotExpression(expression, operator.get_position())
+                    expression = AdditiveInvertedExpression(expression, operator.get_position())
 
                 expressions.append(expression)
 
@@ -200,7 +200,21 @@ class Parser:
                 return AdditiveExpression(expressions, first_expression.get_position())
 
     def parse_multiplicative_expression(self):
-        return self.parse_expression(self.parse_base_expression, MULTIPLICATIVE_OPERATORS, MultiplicativeExpression)
+        if first_expression := self.parse_base_expression():
+            expressions = [first_expression]
+            while operator := self.consume_token(MULTIPLICATIVE_OPERATORS, strict=False):
+                if not (expression := self.parse_base_expression()):
+                    raise MisnomerParserNoExpressionException(self._current_token.get_type(),
+                                                              self.get_current_token_position())
+                if operator.get_type() == TokenType.DIVIDE:
+                    expression = MultiplicativeInvertedExpression(expression, operator.get_position())
+
+                expressions.append(expression)
+
+            if len(expressions) == 1:
+                return first_expression
+            else:
+                return MultiplicativeExpression(expressions, first_expression.get_position())
 
     def parse_base_expression(self):
         operator = self.consume_token(TokenType.SUBTRACT, strict=False) \

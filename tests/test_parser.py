@@ -6,7 +6,8 @@ from parser.parser_exceptions import MisnomerParserUnexpectedTokenException, \
     MisnomerParserNoFunctionStatementBlockException, MisnomerParserFunctionNameDuplicateException, \
     MisnomerParserFunctionParameterNameDuplicateException
 from parser.syntax_tree.expressions import EqualExpression, NotEqualExpression, NotExpression, GreaterEqualExpression, \
-    OrExpression, AndExpression, AdditiveExpression, MultiplicativeExpression
+    OrExpression, AndExpression, AdditiveExpression, MultiplicativeExpression, MultiplicativeInvertedExpression, \
+    AdditiveInvertedExpression
 from parser.syntax_tree.literals import NumericLiteral
 from parser.syntax_tree.statements import IfStatement, Condition, Identifier, ReturnStatement, StatementBlock, \
     FunctionCall, WhileStatement, AssignmentStatement, ContinueStatement, BreakStatement, \
@@ -224,6 +225,41 @@ class TestParser:
             instructions=instructions_statement_block,
             else_statement=else_statement_block,
             position=Position(1, 1, 1)
+        )
+
+        with StringSourceReader(function_code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+
+            statement = parser.parse_statement()
+
+        assert statement == correct_statement
+
+    def test_inverted_statements(self):
+        function_code = "var a: int = ! 1 - 1 / sth() * 20 and 100;"
+
+        correct_statement = VariableInitialisationStatement(
+            name="a",
+            position=Position(1, 1, 1),
+            variable_type=Type.INT,
+            value=AndExpression(
+                expressions=[
+                    AdditiveExpression([
+                        NotExpression([NumericLiteral(1, Position(1, 16, 16))], Position(1, 14, 14)),
+                        MultiplicativeExpression([
+                            AdditiveInvertedExpression(
+                                NumericLiteral(1, Position(1, 20, 20)),
+                                Position(1, 20, 20)
+                            ),
+                            MultiplicativeInvertedExpression(
+                                FunctionCall(arguments=[], identifier="sth", position=Position(1, 24, 24)),
+                                Position(1, 20, 20)),
+                            NumericLiteral(20, Position(1, 32, 32))
+                        ], Position(1, 20, 20)),
+                    ], Position(1, 14, 14)),
+                    NumericLiteral(100, Position(1, 39, 39))
+                ], position=Position(1, 14, 14)
+            )
         )
 
         with StringSourceReader(function_code) as source:

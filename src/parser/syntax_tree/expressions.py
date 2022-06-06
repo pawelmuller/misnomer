@@ -19,8 +19,18 @@ class AndExpression(Expression):
 
 
 class NotExpression(Expression):
-    def __init__(self, expressions, position: Position):
-        super().__init__(expressions, position)
+    def __init__(self, expression, position: Position):
+        super().__init__(expression, position)
+
+
+class AdditiveInvertedExpression(Expression):
+    def __init__(self, expression, position: Position):
+        super().__init__(expression, position)
+
+
+class MultiplicativeInvertedExpression(Expression):
+    def __init__(self, expression, position: Position):
+        super().__init__(expression, position)
 
 
 class AdditiveExpression(Expression):
