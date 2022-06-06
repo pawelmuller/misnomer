@@ -1,5 +1,6 @@
 from interpreter.interpreter_exceptions import MisnomerInterpreterDeclarationException, \
-    MisnomerInterpreterArgumentsNumberDoesNotMatchException, MisnomerInterpreterFunctionDoesNotExistException
+    MisnomerInterpreterArgumentsNumberDoesNotMatchException, MisnomerInterpreterFunctionDoesNotExistException, \
+    MisnomerInterpreterVariableDoesNotExistException
 from parser.syntax_tree.syntax_tree import Node
 from parser.types import Type
 from utils.position import Position
@@ -116,6 +117,9 @@ class Condition(Node):
         super().__init__(position)
         self.expression = logic_expression
 
+    def execute(self, context):
+        return self.expression.execute(context)
+
     def __eq__(self, other):
         super_eq = super().__eq__(other)
         return super_eq and self.expression == other.expression
@@ -138,6 +142,12 @@ class IfStatement(ConditionalStatement):
         super().__init__(condition, instructions, position)
         self.else_statement = else_statement
 
+    def execute(self, context):
+        if self.condition.execute(context):
+            return self.instructions.execute(context)
+        elif self.else_statement:
+            return self.else_statement.execute(context)
+
     def __eq__(self, other):
         super_eq = super().__eq__(other)
         attributes_eq = self.else_statement == other.else_statement
@@ -148,11 +158,19 @@ class WhileStatement(ConditionalStatement):
     def __init__(self, condition: Condition, instructions, position: Position):
         super().__init__(condition, instructions, position)
 
+    def execute(self, context):
+        while self.condition.execute(context):
+            if (exit_code := self.instructions.execute(context)) is not None:
+                return exit_code
+
 
 class ReturnStatement(Node):
     def __init__(self, value, position: Position):
         super().__init__(position)
         self.value = value
+
+    def execute(self, context):
+        return self.value.execute(context)
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)
@@ -166,6 +184,11 @@ class VariableInitialisationStatement(Statement):
         self.value = value
         self.variable_type = variable_type
 
+    def execute(self, context):
+        if (variable := context.variables.get(self.name)) is None:
+            raise MisnomerInterpreterVariableDoesNotExistException(self.name, self.position)
+        return variable
+
     def __eq__(self, other):
         super_eq = super().__eq__(other)
         attributes_eq_1 = self.name == other.name and self.value == other.value
@@ -178,6 +201,10 @@ class AssignmentStatement(Statement):
         super().__init__(position)
         self.name = name
         self.value = value
+
+    def execute(self, context):
+        result = self.value.execute(context)
+        context.add_variable(self.name, result)
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)

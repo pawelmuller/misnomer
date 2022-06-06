@@ -31,7 +31,19 @@ class MisnomerInterpreterArgumentsNumberDoesNotMatchException(MisnomerInterprete
                                                                                       give_position=False)
 
 
-class MisnomerInterpreterFunctionDoesNotExistException(MisnomerInterpreterException):
+class MisnomerInterpreterIdentifierDoesNotExistException(MisnomerInterpreterException):
+    def __init__(self, identifier_type: str, name: str, position: Position):
+        message = f"{identifier_type} {name} does exist.\n"
+        super(MisnomerInterpreterIdentifierDoesNotExistException, self).__init__(position, message, give_position=True)
+
+
+class MisnomerInterpreterFunctionDoesNotExistException(MisnomerInterpreterIdentifierDoesNotExistException):
     def __init__(self, name: str, position: Position):
-        message = f"Function {name} does exist.\n"
-        super(MisnomerInterpreterFunctionDoesNotExistException, self).__init__(position, message, give_position=True)
+        identifier_type = "Function"
+        super(MisnomerInterpreterFunctionDoesNotExistException, self).__init__(identifier_type, name, position)
+
+
+class MisnomerInterpreterVariableDoesNotExistException(MisnomerInterpreterIdentifierDoesNotExistException):
+    def __init__(self, name: str, position: Position):
+        identifier_type = "Variable"
+        super(MisnomerInterpreterVariableDoesNotExistException, self).__init__(identifier_type, name, position)
