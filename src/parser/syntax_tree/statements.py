@@ -1,3 +1,5 @@
+from interpreter.interpreter_exceptions import MisnomerInterpreterDeclarationException, \
+    MisnomerInterpreterArgumentsNumberDoesNotMatchException
 from parser.syntax_tree.syntax_tree import Node
 from parser.types import Type
 from utils.position import Position
@@ -54,6 +56,21 @@ class FunctionDefinition(Node):
 
     def get_name(self):
         return self.name
+
+    def execute(self, context):
+        if self.name in context.functions:
+            raise MisnomerInterpreterDeclarationException(self.name, self.position)
+        context.add_function(self.name, self)
+
+    def __call__(self, context, *call_arguments_values):
+        if (got_arguments_number := len(call_arguments_values)) != (expected_arguments_number := len(self.arguments)):
+            raise MisnomerInterpreterArgumentsNumberDoesNotMatchException(expected_arguments_number,
+                                                                          got_arguments_number,
+                                                                          self.name, self.position)
+        new_context = context.get_context_copy()
+        for argument_name, argument_value in zip(self.arguments, call_arguments_values):
+            new_context.add_variable(argument_name, argument_value)
+        return self.statement_block.execute(new_context)
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)
