@@ -1,6 +1,6 @@
 import argparse
 
-from lexer.token.token_type import TokenType
+from interpreter.interpreter import Interpreter
 from parser.parser import Parser
 from src.lexer.lexer import Lexer
 from utils.exceptions import MisnomerException
@@ -23,10 +23,13 @@ def main():
         with FileSourceReader(args.path) as source:
             lexer = Lexer(source)
             parser = Parser(lexer)
-            parser.parse_program()
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            exit_code = interpreter.execute()
     except MisnomerException as error:
         print(error)
-    return
+    print(f"The program finished with exit code: {exit_code}.")
+    return exit_code
 
 
 if __name__ == "__main__":
