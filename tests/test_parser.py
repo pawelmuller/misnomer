@@ -10,8 +10,7 @@ from parser.syntax_tree.expressions import EqualExpression, NotEqualExpression, 
     AdditiveInvertedExpression
 from parser.syntax_tree.literals import NumericLiteral
 from parser.syntax_tree.statements import IfStatement, Condition, Identifier, ReturnStatement, StatementBlock, \
-    FunctionCall, WhileStatement, AssignmentStatement, ContinueStatement, BreakStatement, \
-    VariableInitialisationStatement
+    FunctionCall, WhileStatement, AssignmentStatement, VariableInitialisationStatement
 from parser.types import Type
 from utils.position import Position
 from utils.source_reader.source_reader import StringSourceReader
@@ -59,7 +58,7 @@ class TestParser:
             condition=Condition(
                 NotEqualExpression(
                     Identifier("something", Position(1, 5, 5)),
-                    NotExpression(
+                    AdditiveInvertedExpression(
                         NumericLiteral(2, Position(1, 19, 19)),
                         Position(1, 18, 18)
                     ),
@@ -202,39 +201,6 @@ class TestParser:
 
         assert statement == correct_statement
 
-    def test_loop_control_statements(self):
-        function_code = "if (something != -2) { continue; } else { break; }"
-        else_statement_block = StatementBlock(Position(1, 41, 41))
-        else_statement_block.add_statement(
-            BreakStatement(Position(1, 43, 43))
-        )
-        instructions_statement_block = StatementBlock(Position(1, 22, 22))
-        instructions_statement_block.add_statement(
-            ContinueStatement(Position(1, 24, 24))
-        )
-        correct_statement = IfStatement(
-            condition=Condition(
-                NotEqualExpression(
-                    Identifier("something", Position(1, 5, 5)),
-                    NotExpression(
-                        NumericLiteral(2, Position(1, 19, 19)),
-                        Position(1, 18, 18)
-                    ), Position(1, 5, 5)
-                ), Position(1, 4, 4)
-            ),
-            instructions=instructions_statement_block,
-            else_statement=else_statement_block,
-            position=Position(1, 1, 1)
-        )
-
-        with StringSourceReader(function_code) as source:
-            lexer = Lexer(source)
-            parser = Parser(lexer)
-
-            statement = parser.parse_statement()
-
-        assert statement == correct_statement
-
     def test_inverted_statements(self):
         function_code = "var a: int = ! 1 - 1 / sth() * 20 and 100;"
 
@@ -244,19 +210,20 @@ class TestParser:
             variable_type=Type.INT,
             value=AndExpression(
                 expressions=[
-                    AdditiveExpression([
-                        NotExpression([NumericLiteral(1, Position(1, 16, 16))], Position(1, 14, 14)),
-                        MultiplicativeExpression([
-                            AdditiveInvertedExpression(
-                                NumericLiteral(1, Position(1, 20, 20)),
-                                Position(1, 20, 20)
-                            ),
-                            MultiplicativeInvertedExpression(
-                                FunctionCall(arguments=[], identifier="sth", position=Position(1, 24, 24)),
-                                Position(1, 20, 20)),
-                            NumericLiteral(20, Position(1, 32, 32))
-                        ], Position(1, 20, 20)),
-                    ], Position(1, 14, 14)),
+                    AdditiveInvertedExpression(
+                        AdditiveExpression([
+                            NotExpression([NumericLiteral(1, Position(1, 16, 16))], Position(1, 14, 14)),
+                            MultiplicativeExpression([
+                                AdditiveInvertedExpression(
+                                    NumericLiteral(1, Position(1, 20, 20)),
+                                    Position(1, 20, 20)
+                                ),
+                                MultiplicativeInvertedExpression(
+                                    FunctionCall(arguments=[], identifier="sth", position=Position(1, 24, 24)),
+                                    Position(1, 20, 20)),
+                                NumericLiteral(20, Position(1, 32, 32))
+                            ], Position(1, 20, 20)),
+                        ], Position(1, 14, 14)), Position(1, 18, 18)),
                     NumericLiteral(100, Position(1, 39, 39))
                 ], position=Position(1, 14, 14)
             )

@@ -10,14 +10,14 @@ from utils.position import Position
 from utils.source_reader import SourceReader
 
 QUOTE_CHARACTERS = ("'", '"')
-MAX_STRING_LENGTH = 1000
 
 
 class Lexer:
-    def __init__(self, reader: SourceReader):
+    def __init__(self, reader: SourceReader, max_string_length: int = 1000):
         self._reader = reader
         self._current_character: str = self._reader.get_first_character()
         self._position = Position()
+        self._max_string_length = max_string_length
 
     def get_next_character(self):
         """
@@ -78,9 +78,9 @@ class Lexer:
 
         while self._current_character != used_quote_sign:
             # String length exceeded
-            if len(buffer) >= MAX_STRING_LENGTH:
+            if len(buffer) >= self._max_string_length:
                 raise MisnomerLexerStringBuildExceededLengthException(self._reader.get_position(),
-                                                                      max_length=MAX_STRING_LENGTH)
+                                                                      max_length=self._max_string_length)
             # EOF
             if self._current_character == EOF:
                 raise MisnomerLexerUnterminatedStringException(self._position)

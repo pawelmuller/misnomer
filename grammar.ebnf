@@ -9,11 +9,9 @@ while_statement                 = while_keyword condition conditional_instructio
 condition                       = "(" or_expression ")" ;
 conditional_instructions        = ( statement_block | statement ) ;
 return_statement                = return_keyword [ or_expression ] ;
-loop_control_statement          = ( break_keyword | continue_keyword) ;
 statement                       = statements_with_block | ( statements_without_block instruction_end_character ) ;
 statements_with_block           = if_statement | while_statement ;
-statements_without_block        = variable_initialisation | return_statement | loop_control_statement |
-                                  identifier_statement ;
+statements_without_block        = variable_initialisation | return_statement | identifier_statement ;
 identifier_statement            = variable_assignment | function_call ;
 
 (* Functions *)
@@ -65,8 +63,6 @@ returns_keyword                 = "returns" ;
 if_keyword                      = "if" ;
 else_keyword                    = "else" ;
 while_keyword                   = "while" ;
-break_keyword                   = "break" ;
-continue_keyword                = "continue" ;
 
 (* Types *)
 types                           = integer_type | float_type | string_type ;

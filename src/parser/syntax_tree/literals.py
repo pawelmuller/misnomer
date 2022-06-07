@@ -7,6 +7,9 @@ class Literal(Node):
         super().__init__(position)
         self.value = value
 
+    def execute(self, *args, **kwargs):
+        return self.value
+
 
 class NumericLiteral(Literal):
     def __init__(self, value, position: Position):

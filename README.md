@@ -5,13 +5,13 @@
 - Running Misnomer scripts from text files
 - Local variables
 - Strong and static typing
-- Built-in types: `integer`, `float` and `string`
-- Possibility to write your functions
+- Built-in types: `int`, `float` and `string`
+- Possibility to write your own functions
 - A `while()` loop
 - A conditional `if` statement
 - Arithmetic operations: addition, subtraction, multiplication, division
 - Logic operations: negation, comparison
-- Error handling
+- Errors (thrown by interpreter)
 - Possibility to print output to the terminal
 - Possibility to input some data from the terminal
 
@@ -32,7 +32,7 @@ so I will add a run flag to allow the user to set a non-default value.
 Because the interpreter will be written in Python:
 - the integer will derive its unlimited precision and the float
 will have precision equal to the C double on your machine
-- the recursion limit will default to 1000 
+- the recursion limit will default to less than 1000: 900 should be a safe number 
 - source code reader class will not handle line endings explicitly, since it's provided by
 [`io.TextIOWrapper`](https://docs.python.org/3.10/library/io.html?highlight=textiowrapper#io.TextIOWrapper)
 
@@ -61,7 +61,6 @@ python misnomer.py path_to_script.mnm --max_string_length 2000
 ```
 
 ## Exemplary code snippets
-*At the moment, the snippets show what the language is supposed to look like in the future.*
 1. The program execution starts from the `main()`:
     ```bash
     main() returns int {
@@ -96,8 +95,9 @@ python misnomer.py path_to_script.mnm --max_string_length 2000
     }
     ```
    You can define variables within `()` braces and return an optional function result using the `return` keyword.
+   You can choose from the following return types: `int`, `float`, `string` and `nothing`.
 
-5. You can use a `while()` loop when you want to repeat the same set of instructions many times:
+6. You can use a `while()` loop when you want to repeat the same set of instructions many times:
     ```bash
     while (a != 100) {
         a = a+1;
@@ -105,7 +105,7 @@ python misnomer.py path_to_script.mnm --max_string_length 2000
     }
     ```
 
-6. It is possible to print a concatenation of the multiple parameters:
+7. It is possible to print a concatenation of the multiple parameters:
     ```bash
     var a: string = "hundred";
     var b: int = 100;
@@ -113,8 +113,16 @@ python misnomer.py path_to_script.mnm --max_string_length 2000
     print("You can put even a ", a, "(", b, ") parameters here!");
     ```
 
-7. Users can be made to input some value into the running program:
+8. Users can be made to input some value into the running program:
     ```bash
     var user_input: str = input("Please type something: ");
     ```
    Input parameters work the same as the `print()` function.
+    ```
+
+9. There are builtin functions for casting different types:
+    ```bash
+    var user_input_1: string = to_string(123456);
+    var user_input_2: int = to_int("123456");
+    var user_input_3: float = to_float("123.456");
+    ```
