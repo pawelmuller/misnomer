@@ -146,6 +146,17 @@ class TestLexerExceptions:
                 while token._type != TokenType.EOF:
                     token = lexer.get_next_token()
 
+    def test_maximum_string_length(self):
+        code = "var a: string = 'Something longer than anticipated';"
+
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source, 20)
+            token = Token(None, Position(), TokenType.UNKNOWN)
+
+            with pytest.raises(MisnomerLexerStringBuildExceededLengthException):
+                while token._type != TokenType.EOF:
+                    token = lexer.get_next_token()
+
 
 class TestPosition:
     def test_position_after_example_function(self):
