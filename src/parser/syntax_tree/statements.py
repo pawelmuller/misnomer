@@ -213,6 +213,8 @@ class AssignmentStatement(Statement):
         self.value = value
 
     def execute(self, context):
+        if self.name not in context.variables:
+            raise MisnomerInterpreterVariableDoesNotExistException(self.name, self.position)
         result = self.value.execute(context)
         variable_type = type(context.get_variable(self.name))
         if type(result) == variable_type:

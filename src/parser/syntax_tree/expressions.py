@@ -88,7 +88,7 @@ class AdditiveExpression(Expression):
                 result += expression.execute(context)
             return result
         except TypeError:
-            raise MisnomerInterpreterBadOperandTypeException("+", self.expressions, self.expressions.position)
+            raise MisnomerInterpreterBadOperandTypeException("+", self.expressions[0], self.position)
 
 
 class MultiplicativeExpression(Expression):
