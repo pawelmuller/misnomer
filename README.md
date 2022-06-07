@@ -32,7 +32,7 @@ so I will add a run flag to allow the user to set a non-default value.
 Because the interpreter will be written in Python:
 - the integer will derive its unlimited precision and the float
 will have precision equal to the C double on your machine
-- the recursion limit will default to 1000 
+- the recursion limit will default to less than 1000: 900 should be a safe number 
 - source code reader class will not handle line endings explicitly, since it's provided by
 [`io.TextIOWrapper`](https://docs.python.org/3.10/library/io.html?highlight=textiowrapper#io.TextIOWrapper)
 
