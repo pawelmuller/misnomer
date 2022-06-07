@@ -47,3 +47,15 @@ class MisnomerInterpreterVariableDoesNotExistException(MisnomerInterpreterIdenti
     def __init__(self, name: str, position: Position):
         identifier_type = "Variable"
         super(MisnomerInterpreterVariableDoesNotExistException, self).__init__(identifier_type, name, position)
+
+
+class MisnomerInterpreterCastingException(MisnomerInterpreterException):
+    def __init__(self, cast_type: str, expression, position: Position):
+        message = f"Cannot cast '{expression.__class__.__name__}' to {cast_type}.\n"
+        super(MisnomerInterpreterCastingException, self).__init__(position, message, give_position=True)
+
+
+class MisnomerInterpreterCastingBuiltinException(MisnomerInterpreterCastingException):
+    def __init__(self, cast_type: str, expression):
+        self.cast_type = cast_type
+        self.expression = expression

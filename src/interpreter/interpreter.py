@@ -1,7 +1,4 @@
-builtin_functions = {
-    "print": print,
-    "input": input,
-}
+from interpreter.builtin_functions import builtin_functions
 
 
 class Context:
