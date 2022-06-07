@@ -22,7 +22,7 @@ class StatementBlock(Node):
 
     def execute(self, context):
         for statement in self.statements:
-            if exit_code := statement.execute(context):
+            if (exit_code := statement.execute(context)) is not None:
                 return exit_code
 
     def __eq__(self, other):
