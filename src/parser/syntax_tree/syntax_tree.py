@@ -10,7 +10,7 @@ class Node:
         self.position = position
 
     def __repr__(self):
-        return f"{self.__class__.__name__} at {self.position}"
+        return f"{self.__class__.__name__} ({self.position})"
 
     def get_position(self):
         return copy(self.position)

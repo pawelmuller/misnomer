@@ -17,10 +17,10 @@ class MisnomerInterpreterNoMainFunctionException(MisnomerInterpreterException):
         super(MisnomerInterpreterNoMainFunctionException, self).__init__(position, message, give_position=False)
 
 
-class MisnomerInterpreterDeclarationException(MisnomerInterpreterException):
+class MisnomerInterpreterVariableAlreadyExistsException(MisnomerInterpreterException):
     def __init__(self, name: str, position: Position):
-        message = f"Declaration error with {name}."
-        super(MisnomerInterpreterDeclarationException, self).__init__(position, message, give_position=False)
+        message = f"Variable {name} does already exist."
+        super(MisnomerInterpreterVariableAlreadyExistsException, self).__init__(position, message, give_position=False)
 
 
 class MisnomerInterpreterArgumentsNumberDoesNotMatchException(MisnomerInterpreterException):

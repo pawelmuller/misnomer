@@ -297,8 +297,9 @@ class Parser:
                 if value := self.parse_or_expression():
                     return VariableInitialisationStatement(identifier.get_value(), value, variable_type,
                                                            var_token.get_position())
-            return VariableInitialisationStatement(identifier.get_value(), None, variable_type,
-                                                   identifier.get_position())
+            return VariableInitialisationStatement(identifier.get_value(),
+                                                   NumericLiteral(0, self.get_current_token_position()),
+                                                   variable_type, identifier.get_position())
 
     def parse_identifier_statement(self):
         if identifier_token := self.consume_token(TokenType.IDENTIFIER, strict=False):

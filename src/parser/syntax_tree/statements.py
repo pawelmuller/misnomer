@@ -1,4 +1,4 @@
-from interpreter.interpreter_exceptions import MisnomerInterpreterDeclarationException, \
+from interpreter.interpreter_exceptions import MisnomerInterpreterVariableAlreadyExistsException, \
     MisnomerInterpreterArgumentsNumberDoesNotMatchException, MisnomerInterpreterFunctionDoesNotExistException, \
     MisnomerInterpreterVariableDoesNotExistException, MisnomerInterpreterCastingException, \
     MisnomerInterpreterCastingBuiltinException, MisnomerInterpreterVariableAssignmentException
@@ -30,7 +30,7 @@ class StatementBlock(Node):
         return super_eq and self.statements == other.statements
 
     def __repr__(self):
-        return super().__repr__() + ': '.join([str(node) for node in self.statements])
+        return super().__repr__() + ":" + " ".join([str(node) for node in self.statements])
 
 
 class FunctionParameter(Node):
@@ -61,7 +61,7 @@ class FunctionDefinition(Node):
 
     def execute(self, context):
         if self.name in context.functions:
-            raise MisnomerInterpreterDeclarationException(self.name, self.position)
+            raise MisnomerInterpreterVariableAlreadyExistsException(self.name, self.position)
         context.add_function(self.name, self)
 
     def __call__(self, context, *call_arguments_values):
@@ -92,7 +92,7 @@ class FunctionCall(Node):
 
         if function := context.get_function(self.identifier):
             if isinstance(function, FunctionDefinition):
-                arguments = [context, *arguments]
+                arguments = [context] + arguments
             try:
                 return function(*arguments)
             except MisnomerInterpreterCastingBuiltinException as e:
@@ -112,7 +112,7 @@ class Identifier(Node):
         self.name = name
 
     def execute(self, context):
-        if variable := context.get_variable(self.name):
+        if (variable := context.get_variable(self.name)) is not None:
             return variable
         raise MisnomerInterpreterVariableDoesNotExistException(self.name, self.position)
 
@@ -195,7 +195,7 @@ class VariableInitialisationStatement(Statement):
 
     def execute(self, context):
         if self.name in context.variables:
-            raise MisnomerInterpreterDeclarationException(self.name, self.position)
+            raise MisnomerInterpreterVariableAlreadyExistsException(self.name, self.position)
         result = self.value.execute(context)
         context.add_variable(self.name, result)
 

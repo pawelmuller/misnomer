@@ -27,9 +27,9 @@ main() returns int {
 
     while (a <= 0 or b <= 0 or c <= 0) {
         print("Please give lengths for each triangle arm:\n");
-        a = input("a: ");
-        b = input("b: ");
-        c = input("c: ");
+        a = to_int(input("a: "));
+        b = to_int(input("b: "));
+        c = to_int(input("c: "));
     }
     what_triangle(a, b, c);
     what_triangle(1.7, 10, 10000);
