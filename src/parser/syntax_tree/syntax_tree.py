@@ -15,6 +15,9 @@ class Node:
     def get_position(self):
         return copy(self.position)
 
+    def execute(self, context):
+        raise NotImplemented("This is just an interface method.")
+
     def __eq__(self, other):
         return self.position == other.position
 
@@ -31,6 +34,8 @@ class Program(Node):
         self.function_definitions[function_name] = function_definition
 
     def execute(self, context):
+        for function_name, function in self.function_definitions.items():
+            function.execute(context)
         if main := context.functions.get("main"):
             if (exit_code := main.statement_block.execute(context)) is not None:
                 return exit_code

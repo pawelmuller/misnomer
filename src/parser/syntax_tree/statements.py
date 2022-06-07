@@ -107,6 +107,9 @@ class Identifier(Node):
         super().__init__(position)
         self.name = name
 
+    def execute(self, context):
+        return context.get_variable(self.name)
+
     def __eq__(self, other):
         super_eq = super().__eq__(other)
         return super_eq and self.name == other.name
@@ -185,9 +188,10 @@ class VariableInitialisationStatement(Statement):
         self.variable_type = variable_type
 
     def execute(self, context):
-        if (variable := context.variables.get(self.name)) is None:
-            raise MisnomerInterpreterVariableDoesNotExistException(self.name, self.position)
-        return variable
+        if self.name in context.variables:
+            raise MisnomerInterpreterDeclarationException(self.name, self.position)
+        result = self.value.execute(context)
+        context.add_variable(self.name, result)
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)
