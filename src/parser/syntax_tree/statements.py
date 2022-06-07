@@ -245,13 +245,3 @@ class AssignmentStatement(Statement):
         super_eq = super().__eq__(other)
         attributes_eq = self.name == other.name and self.value == other.value
         return super_eq and attributes_eq
-
-
-class BreakStatement(Statement):
-    def __init__(self, position: Position):
-        super().__init__(position)
-
-
-class ContinueStatement(Statement):
-    def __init__(self, position: Position):
-        super().__init__(position)

@@ -16,7 +16,7 @@ from parser.syntax_tree.expressions import AndExpression, NotExpression, OrExpre
 from parser.syntax_tree.literals import NumericLiteral, StringLiteral
 from parser.syntax_tree.statements import FunctionParameter, StatementBlock, IfStatement, FunctionDefinition, \
     Condition, WhileStatement, FunctionCall, Identifier, VariableInitialisationStatement, AssignmentStatement, \
-    ReturnStatement, BreakStatement, ContinueStatement
+    ReturnStatement
 from parser.syntax_tree.syntax_tree import Program
 
 
@@ -120,8 +120,6 @@ class Parser:
         elif statement := self.parse_identifier_statement():
             pass
         elif statement := self.parse_return_statement():
-            pass
-        elif statement := self.parse_loop_control_statement():
             pass
 
         if statement:
@@ -319,12 +317,6 @@ class Parser:
             expression = self.parse_or_expression()
 
             return ReturnStatement(expression, token.get_position())
-
-    def parse_loop_control_statement(self):
-        if token := self.consume_token(TokenType.BREAK, strict=False):
-            return BreakStatement(token.get_position())
-        if token := self.consume_token(TokenType.CONTINUE, strict=False):
-            return ContinueStatement(token.get_position())
 
     def _parse_function_call(self, token):
         if self.consume_token(TokenType.ROUND_BRACKET_L, strict=False):

@@ -10,8 +10,7 @@ from parser.syntax_tree.expressions import EqualExpression, NotEqualExpression, 
     AdditiveInvertedExpression
 from parser.syntax_tree.literals import NumericLiteral
 from parser.syntax_tree.statements import IfStatement, Condition, Identifier, ReturnStatement, StatementBlock, \
-    FunctionCall, WhileStatement, AssignmentStatement, ContinueStatement, BreakStatement, \
-    VariableInitialisationStatement
+    FunctionCall, WhileStatement, AssignmentStatement, VariableInitialisationStatement
 from parser.types import Type
 from utils.position import Position
 from utils.source_reader.source_reader import StringSourceReader
@@ -191,39 +190,6 @@ class TestParser:
                 Position(1, 7, 7)
             ),
             instructions=instructions_statement_block,
-            position=Position(1, 1, 1)
-        )
-
-        with StringSourceReader(function_code) as source:
-            lexer = Lexer(source)
-            parser = Parser(lexer)
-
-            statement = parser.parse_statement()
-
-        assert statement == correct_statement
-
-    def test_loop_control_statements(self):
-        function_code = "if (something != -2) { continue; } else { break; }"
-        else_statement_block = StatementBlock(Position(1, 41, 41))
-        else_statement_block.add_statement(
-            BreakStatement(Position(1, 43, 43))
-        )
-        instructions_statement_block = StatementBlock(Position(1, 22, 22))
-        instructions_statement_block.add_statement(
-            ContinueStatement(Position(1, 24, 24))
-        )
-        correct_statement = IfStatement(
-            condition=Condition(
-                NotEqualExpression(
-                    Identifier("something", Position(1, 5, 5)),
-                    NotExpression(
-                        NumericLiteral(2, Position(1, 19, 19)),
-                        Position(1, 18, 18)
-                    ), Position(1, 5, 5)
-                ), Position(1, 4, 4)
-            ),
-            instructions=instructions_statement_block,
-            else_statement=else_statement_block,
             position=Position(1, 1, 1)
         )
 
