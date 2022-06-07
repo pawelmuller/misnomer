@@ -59,7 +59,7 @@ class TestParser:
             condition=Condition(
                 NotEqualExpression(
                     Identifier("something", Position(1, 5, 5)),
-                    NotExpression(
+                    AdditiveInvertedExpression(
                         NumericLiteral(2, Position(1, 19, 19)),
                         Position(1, 18, 18)
                     ),
@@ -244,19 +244,20 @@ class TestParser:
             variable_type=Type.INT,
             value=AndExpression(
                 expressions=[
-                    AdditiveExpression([
-                        NotExpression([NumericLiteral(1, Position(1, 16, 16))], Position(1, 14, 14)),
-                        MultiplicativeExpression([
-                            AdditiveInvertedExpression(
-                                NumericLiteral(1, Position(1, 20, 20)),
-                                Position(1, 20, 20)
-                            ),
-                            MultiplicativeInvertedExpression(
-                                FunctionCall(arguments=[], identifier="sth", position=Position(1, 24, 24)),
-                                Position(1, 20, 20)),
-                            NumericLiteral(20, Position(1, 32, 32))
-                        ], Position(1, 20, 20)),
-                    ], Position(1, 14, 14)),
+                    AdditiveInvertedExpression(
+                        AdditiveExpression([
+                            NotExpression([NumericLiteral(1, Position(1, 16, 16))], Position(1, 14, 14)),
+                            MultiplicativeExpression([
+                                AdditiveInvertedExpression(
+                                    NumericLiteral(1, Position(1, 20, 20)),
+                                    Position(1, 20, 20)
+                                ),
+                                MultiplicativeInvertedExpression(
+                                    FunctionCall(arguments=[], identifier="sth", position=Position(1, 24, 24)),
+                                    Position(1, 20, 20)),
+                                NumericLiteral(20, Position(1, 32, 32))
+                            ], Position(1, 20, 20)),
+                        ], Position(1, 14, 14)), Position(1, 18, 18)),
                     NumericLiteral(100, Position(1, 39, 39))
                 ], position=Position(1, 14, 14)
             )

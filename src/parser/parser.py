@@ -228,7 +228,10 @@ class Parser:
         if operator:
             if not expression:
                 raise MisnomerParserNoExpressionException(operator.get_type(), operator.get_position())
-            return NotExpression(expression, operator.get_position())
+            if operator.get_type() == TokenType.SUBTRACT:
+                return AdditiveInvertedExpression(expression, operator.get_position())
+            else:
+                return NotExpression(expression, operator.get_position())
         return expression
 
     def parse_parenthesized_operation(self):
