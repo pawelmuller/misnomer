@@ -4,7 +4,8 @@ from interpreter.interpreter import Interpreter
 from interpreter.interpreter_exceptions import MisnomerInterpreterNoMainFunctionException, \
     MisnomerInterpreterVariableAlreadyExistsException, MisnomerInterpreterArgumentsNumberDoesNotMatchException, \
     MisnomerInterpreterFunctionDoesNotExistException, MisnomerInterpreterVariableDoesNotExistException, \
-    MisnomerInterpreterBadOperandTypeException, MisnomerInterpreterCastingException
+    MisnomerInterpreterBadOperandTypeException, MisnomerInterpreterCastingException, \
+    MisnomerInterpreterVariableAssignmentTypeException
 from lexer.lexer import Lexer
 from parser.parser import Parser
 from utils.source_reader.source_reader import StringSourceReader
@@ -169,6 +170,22 @@ class TestParser:
 
             assert exit_code == -155
 
+    def test_int_to_float_assignment(self):
+        code = """
+        main() returns float {
+            var a: float = 1555;
+            return a;
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            exit_code = interpreter.execute()
+
+            assert exit_code == 1555
+
 
 class TestParserExceptions:
     def test_no_main(self):
@@ -299,4 +316,34 @@ class TestParserExceptions:
             program = parser.parse_program()
             interpreter = Interpreter(program)
             with pytest.raises(MisnomerInterpreterCastingException):
+                interpreter.execute()
+
+    def test_float_to_int_assignment(self):
+        code = """
+        main() returns int {
+            var a: int = 1555.55;
+            return a;
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            with pytest.raises(MisnomerInterpreterVariableAssignmentTypeException):
+                interpreter.execute()
+
+    def test_string_to_int_assignment(self):
+        code = """
+        main() returns int {
+            var a: int = "1555.55";
+            return a;
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            with pytest.raises(MisnomerInterpreterVariableAssignmentTypeException):
                 interpreter.execute()

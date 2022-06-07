@@ -74,7 +74,7 @@ class MisnomerInterpreterCastingBuiltinException(MisnomerInterpreterCastingExcep
         self.expression = expression
 
 
-class MisnomerInterpreterVariableAssignmentException(MisnomerInterpreterException):
+class MisnomerInterpreterVariableAssignmentTypeException(MisnomerInterpreterException):
     def __init__(self, value_type: type, variable_type: type, variable_name: str, position: Position):
         message = f"Cannot assign value of type {value_type} to variable '{variable_name}' of type {variable_type}.\n"
-        super(MisnomerInterpreterVariableAssignmentException, self).__init__(position, message, give_position=True)
+        super(MisnomerInterpreterVariableAssignmentTypeException, self).__init__(position, message, give_position=True)

@@ -1,7 +1,8 @@
+from interpreter.dictionaries import misnomer_types_to_python_types
 from interpreter.interpreter_exceptions import MisnomerInterpreterVariableAlreadyExistsException, \
     MisnomerInterpreterArgumentsNumberDoesNotMatchException, MisnomerInterpreterFunctionDoesNotExistException, \
     MisnomerInterpreterVariableDoesNotExistException, MisnomerInterpreterCastingException, \
-    MisnomerInterpreterCastingBuiltinException, MisnomerInterpreterVariableAssignmentException
+    MisnomerInterpreterCastingBuiltinException, MisnomerInterpreterVariableAssignmentTypeException
 from parser.syntax_tree.syntax_tree import Node
 from parser.types import Type
 from utils.position import Position
@@ -193,10 +194,18 @@ class VariableInitialisationStatement(Statement):
         self.value = value
         self.variable_type = variable_type
 
+    def check_if_value_matches_type(self, result):
+        value_type = type(result)
+        if correct_types := misnomer_types_to_python_types.get(self.variable_type):
+            if value_type not in correct_types:
+                raise MisnomerInterpreterVariableAssignmentTypeException(value_type, self.variable_type.name,
+                                                                         self.name, self.position)
+
     def execute(self, context):
         if self.name in context.variables:
             raise MisnomerInterpreterVariableAlreadyExistsException(self.name, self.position)
         result = self.value.execute(context)
+        self.check_if_value_matches_type(result)
         context.add_variable(self.name, result)
 
     def __eq__(self, other):
@@ -220,7 +229,7 @@ class AssignmentStatement(Statement):
         if type(result) == variable_type:
             context.add_variable(self.name, result)
         else:
-            raise MisnomerInterpreterVariableAssignmentException(type(result), variable_type, self.name, self.position)
+            raise MisnomerInterpreterVariableAssignmentTypeException(type(result), variable_type, self.name, self.position)
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)
