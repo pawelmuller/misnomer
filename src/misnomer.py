@@ -26,10 +26,10 @@ def main():
             program = parser.parse_program()
             interpreter = Interpreter(program)
             exit_code = interpreter.execute()
+            print(f"The program finished with exit code: {exit_code}.")
+            return exit_code
     except MisnomerException as error:
         print(error)
-    print(f"The program finished with exit code: {exit_code}.")
-    return exit_code
 
 
 if __name__ == "__main__":

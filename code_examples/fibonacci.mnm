@@ -10,7 +10,7 @@ fibonacci(n: int) returns int {
 main() returns int {
     var n: int = -1;
     while (n <= 0) {
-        n = input("Please give a number greater than zero: ");
+        n = to_int(input("Please give a number greater than zero: "));
     }
     var result: int = fibonacci(n);
 
@@ -19,6 +19,6 @@ main() returns int {
     else if (n == 2) { ordinal_suffix="nd"; }
     else if (n == 3) { ordinal_suffix="rd"; }
 
-    print("The ", n, ordinal_suffix, " Fibonacci number is: ", result);
+    print("The", n, ordinal_suffix, "Fibonacci number is:", result);
     return 0;
 }

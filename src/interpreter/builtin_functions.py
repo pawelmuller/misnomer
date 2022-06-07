@@ -28,7 +28,7 @@ def convert_to_string(x):
 builtin_functions = {
     "print": print,
     "input": input,
-    "int": convert_to_int,
-    "float": convert_to_float,
-    "string": convert_to_string,
+    "to_int": convert_to_int,
+    "to_float": convert_to_float,
+    "to_string": convert_to_string,
 }

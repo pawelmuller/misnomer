@@ -166,12 +166,3 @@ class GreaterEqualExpression(BinaryExpression):
 
     def execute(self, context):
         return self.left.execute(context) >= self.right.execute(context)
-
-
-class AssignmentExpression(BinaryExpression):
-    def __init__(self, left, right, position: Position):
-        super().__init__(left, right, position)
-
-    def execute(self, context):
-        result = self.right.execute(context)
-        context.add_variable(self.left.name, result)

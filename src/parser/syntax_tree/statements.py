@@ -1,6 +1,7 @@
 from interpreter.interpreter_exceptions import MisnomerInterpreterDeclarationException, \
     MisnomerInterpreterArgumentsNumberDoesNotMatchException, MisnomerInterpreterFunctionDoesNotExistException, \
-    MisnomerInterpreterVariableDoesNotExistException
+    MisnomerInterpreterVariableDoesNotExistException, MisnomerInterpreterCastingException, \
+    MisnomerInterpreterCastingBuiltinException, MisnomerInterpreterVariableAssignmentException
 from parser.syntax_tree.syntax_tree import Node
 from parser.types import Type
 from utils.position import Position
@@ -87,12 +88,15 @@ class FunctionCall(Node):
         self.arguments = arguments
 
     def execute(self, context):
-        args = [arg.execute(context) for arg in self.arguments]
+        arguments = [argument.execute(context) for argument in self.arguments]
 
         if function := context.get_function(self.identifier):
             if isinstance(function, FunctionDefinition):
-                args = [context, *args]
-            return function(*args)
+                arguments = [context, *arguments]
+            try:
+                return function(*arguments)
+            except MisnomerInterpreterCastingBuiltinException as e:
+                raise MisnomerInterpreterCastingException(e.cast_type, e.expression, self.position)
         else:
             raise MisnomerInterpreterFunctionDoesNotExistException(self.identifier, self.position)
 
@@ -108,7 +112,9 @@ class Identifier(Node):
         self.name = name
 
     def execute(self, context):
-        return context.get_variable(self.name)
+        if variable := context.get_variable(self.name):
+            return variable
+        raise MisnomerInterpreterVariableDoesNotExistException(self.name, self.position)
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)
@@ -208,7 +214,11 @@ class AssignmentStatement(Statement):
 
     def execute(self, context):
         result = self.value.execute(context)
-        context.add_variable(self.name, result)
+        variable_type = type(context.get_variable(self.name))
+        if type(result) == variable_type:
+            context.add_variable(self.name, result)
+        else:
+            raise MisnomerInterpreterVariableAssignmentException(type(result), variable_type, self.name, self.position)
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)
