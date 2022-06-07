@@ -17,6 +17,12 @@ class MisnomerInterpreterExceededMaximumDepthException(MisnomerInterpreterExcept
         super(MisnomerInterpreterExceededMaximumDepthException, self).__init__(Position(), message, give_position=False)
 
 
+class MisnomerInterpreterZeroDivisionException(MisnomerInterpreterException):
+    def __init__(self, position: Position):
+        message = f"There was an attempt to divide by zero."
+        super(MisnomerInterpreterZeroDivisionException, self).__init__(position, message, give_position=True)
+
+
 class MisnomerInterpreterNoMainFunctionException(MisnomerInterpreterException):
     def __init__(self, position: Position):
         message = f"Main function has not been found."
@@ -88,5 +94,6 @@ class MisnomerInterpreterVariableAssignmentTypeException(MisnomerInterpreterExce
 
 class MisnomerInterpreterFunctionReturnTypeException(MisnomerInterpreterException):
     def __init__(self, value_type: type, return_type: type, function_name: str, position: Position):
-        message = f"Cannot return value of type {value_type} from function '{function_name}' that returns {return_type}.\n"
+        message = f"Cannot return value of type {value_type} from function '{function_name}'" \
+                  f"that returns {return_type}.\n"
         super(MisnomerInterpreterFunctionReturnTypeException, self).__init__(position, message, give_position=True)

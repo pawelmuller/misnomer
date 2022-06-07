@@ -1,5 +1,5 @@
 from interpreter.interpreter_exceptions import MisnomerInterpreterCouldNotNegateExpressionException, \
-    MisnomerInterpreterBadOperandTypeException
+    MisnomerInterpreterBadOperandTypeException, MisnomerInterpreterZeroDivisionException
 from parser.syntax_tree.syntax_tree import Node
 from utils.position import Position
 
@@ -72,7 +72,11 @@ class MultiplicativeInvertedExpression(Expression):
 
     def execute(self, context):
         try:
-            return 1.0 / self.expressions.execute(context)
+            result = self.expressions.execute(context)
+            if result:
+                return 1.0 / result
+            else:
+                raise MisnomerInterpreterZeroDivisionException(self.position)
         except TypeError:
             raise MisnomerInterpreterBadOperandTypeException("/", self.expressions, self.expressions.position)
 

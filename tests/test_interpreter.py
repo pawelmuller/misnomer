@@ -6,7 +6,7 @@ from interpreter.interpreter_exceptions import MisnomerInterpreterNoMainFunction
     MisnomerInterpreterFunctionDoesNotExistException, MisnomerInterpreterVariableDoesNotExistException, \
     MisnomerInterpreterBadOperandTypeException, MisnomerInterpreterCastingException, \
     MisnomerInterpreterVariableAssignmentTypeException, MisnomerInterpreterFunctionReturnTypeException, \
-    MisnomerInterpreterExceededMaximumDepthException
+    MisnomerInterpreterExceededMaximumDepthException, MisnomerInterpreterZeroDivisionException
 from lexer.lexer import Lexer
 from parser.parser import Parser
 from utils.source_reader.source_reader import StringSourceReader
@@ -501,4 +501,18 @@ class TestParserExceptions:
             program = parser.parse_program()
             interpreter = Interpreter(program)
             with pytest.raises(MisnomerInterpreterFunctionReturnTypeException):
+                interpreter.execute()
+
+    def test_zero_division(self):
+        code = """
+        main() returns int {
+            var a: float = 1 / 0;
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            with pytest.raises(MisnomerInterpreterZeroDivisionException):
                 interpreter.execute()
