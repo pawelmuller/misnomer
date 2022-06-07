@@ -2,7 +2,8 @@ from interpreter.dictionaries import misnomer_types_to_python_types
 from interpreter.interpreter_exceptions import MisnomerInterpreterVariableAlreadyExistsException, \
     MisnomerInterpreterArgumentsNumberDoesNotMatchException, MisnomerInterpreterFunctionDoesNotExistException, \
     MisnomerInterpreterVariableDoesNotExistException, MisnomerInterpreterCastingException, \
-    MisnomerInterpreterCastingBuiltinException, MisnomerInterpreterVariableAssignmentTypeException
+    MisnomerInterpreterCastingBuiltinException, MisnomerInterpreterVariableAssignmentTypeException, \
+    MisnomerInterpreterFunctionReturnTypeException
 from parser.syntax_tree.syntax_tree import Node
 from parser.types import Type
 from utils.position import Position
@@ -60,6 +61,13 @@ class FunctionDefinition(Node):
     def get_name(self):
         return self.name
 
+    def check_if_value_matches_type(self, result):
+        value_type = type(result)
+        if correct_types := misnomer_types_to_python_types.get(self.return_type):
+            if value_type not in correct_types:
+                raise MisnomerInterpreterFunctionReturnTypeException(value_type, self.return_type.name,
+                                                                     self.name, self.position)
+
     def execute(self, context):
         if self.name in context.functions:
             raise MisnomerInterpreterVariableAlreadyExistsException(self.name, self.position)
@@ -73,7 +81,9 @@ class FunctionDefinition(Node):
         new_context = context.get_context_copy()
         for argument_name, argument_value in zip(self.arguments, call_arguments_values):
             new_context.add_variable(argument_name, argument_value)
-        return self.statement_block.execute(new_context)
+        result = self.statement_block.execute(new_context)
+        self.check_if_value_matches_type(result)
+        return result
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)
@@ -180,7 +190,7 @@ class ReturnStatement(Node):
         self.value = value
 
     def execute(self, context):
-        return self.value.execute(context)
+        return self.value.execute(context) if self.value is not None else None
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)

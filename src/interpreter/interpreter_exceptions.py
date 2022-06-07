@@ -78,3 +78,9 @@ class MisnomerInterpreterVariableAssignmentTypeException(MisnomerInterpreterExce
     def __init__(self, value_type: type, variable_type: type, variable_name: str, position: Position):
         message = f"Cannot assign value of type {value_type} to variable '{variable_name}' of type {variable_type}.\n"
         super(MisnomerInterpreterVariableAssignmentTypeException, self).__init__(position, message, give_position=True)
+
+
+class MisnomerInterpreterFunctionReturnTypeException(MisnomerInterpreterException):
+    def __init__(self, value_type: type, return_type: type, function_name: str, position: Position):
+        message = f"Cannot return value of type {value_type} from function '{function_name}' that returns {return_type}.\n"
+        super(MisnomerInterpreterFunctionReturnTypeException, self).__init__(position, message, give_position=True)

@@ -5,7 +5,7 @@ from interpreter.interpreter_exceptions import MisnomerInterpreterNoMainFunction
     MisnomerInterpreterVariableAlreadyExistsException, MisnomerInterpreterArgumentsNumberDoesNotMatchException, \
     MisnomerInterpreterFunctionDoesNotExistException, MisnomerInterpreterVariableDoesNotExistException, \
     MisnomerInterpreterBadOperandTypeException, MisnomerInterpreterCastingException, \
-    MisnomerInterpreterVariableAssignmentTypeException
+    MisnomerInterpreterVariableAssignmentTypeException, MisnomerInterpreterFunctionReturnTypeException
 from lexer.lexer import Lexer
 from parser.parser import Parser
 from utils.source_reader.source_reader import StringSourceReader
@@ -186,6 +186,69 @@ class TestParser:
 
             assert exit_code == 1555
 
+    def test_return_1(self):
+        code = """
+        foo() returns float {return 155;}
+        main() returns float {
+            return foo();
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            exit_code = interpreter.execute()
+
+            assert exit_code == 155
+
+    def test_return_2(self):
+        code = """
+        foo() returns int {return 170;}
+        main() returns int {
+            return foo();
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            exit_code = interpreter.execute()
+
+            assert exit_code == 170
+
+    def test_return_3(self):
+        code = """
+        foo() returns string {return "170";}
+        main() returns string {
+            return foo();
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            exit_code = interpreter.execute()
+
+            assert exit_code == "170"
+
+    def test_return_wrong_type_5(self):
+        code = """
+        foo() returns nothing {return;}
+        main() returns int {
+            foo();
+            return 0;
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            interpreter.execute()
+
 
 class TestParserExceptions:
     def test_no_main(self):
@@ -276,7 +339,7 @@ class TestParserExceptions:
             with pytest.raises(MisnomerInterpreterVariableDoesNotExistException):
                 interpreter.execute()
 
-    def test_variable_does_not_exist(self):
+    def test_bad_operand_type(self):
         code = """
         main() returns int {
             var a: string = "abc" + "abc";
@@ -346,4 +409,79 @@ class TestParserExceptions:
             program = parser.parse_program()
             interpreter = Interpreter(program)
             with pytest.raises(MisnomerInterpreterVariableAssignmentTypeException):
+                interpreter.execute()
+
+    def test_return_wrong_type_1(self):
+        code = """
+        foo() returns int {return "str";}
+        main() returns int {
+            foo();
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            with pytest.raises(MisnomerInterpreterFunctionReturnTypeException):
+                interpreter.execute()
+
+    def test_return_wrong_type_2(self):
+        code = """
+        foo() returns float {return "str";}
+        main() returns int {
+            foo();
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            with pytest.raises(MisnomerInterpreterFunctionReturnTypeException):
+                interpreter.execute()
+
+    def test_return_wrong_type_3(self):
+        code = """
+        foo() returns string {return 1.55;}
+        main() returns int {
+            foo();
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            with pytest.raises(MisnomerInterpreterFunctionReturnTypeException):
+                interpreter.execute()
+
+    def test_return_wrong_type_4(self):
+        code = """
+        foo() returns int {return 1.55;}
+        main() returns int {
+            foo();
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            with pytest.raises(MisnomerInterpreterFunctionReturnTypeException):
+                interpreter.execute()
+
+    def test_return_wrong_type_5(self):
+        code = """
+        foo() returns nothing {return 1.55;}
+        main() returns int {
+            foo();
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            with pytest.raises(MisnomerInterpreterFunctionReturnTypeException):
                 interpreter.execute()
