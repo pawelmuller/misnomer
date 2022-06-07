@@ -11,6 +11,12 @@ class MisnomerInterpreterException(MisnomerException):
         super(MisnomerInterpreterException, self).__init__(message)
 
 
+class MisnomerInterpreterExceededMaximumDepthException(MisnomerInterpreterException):
+    def __init__(self, depth: int):
+        message = f"Maximum call depth has been reached ({depth})."
+        super(MisnomerInterpreterExceededMaximumDepthException, self).__init__(Position(), message, give_position=False)
+
+
 class MisnomerInterpreterNoMainFunctionException(MisnomerInterpreterException):
     def __init__(self, position: Position):
         message = f"Main function has not been found."

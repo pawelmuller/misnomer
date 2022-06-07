@@ -5,7 +5,8 @@ from interpreter.interpreter_exceptions import MisnomerInterpreterNoMainFunction
     MisnomerInterpreterVariableAlreadyExistsException, MisnomerInterpreterArgumentsNumberDoesNotMatchException, \
     MisnomerInterpreterFunctionDoesNotExistException, MisnomerInterpreterVariableDoesNotExistException, \
     MisnomerInterpreterBadOperandTypeException, MisnomerInterpreterCastingException, \
-    MisnomerInterpreterVariableAssignmentTypeException, MisnomerInterpreterFunctionReturnTypeException
+    MisnomerInterpreterVariableAssignmentTypeException, MisnomerInterpreterFunctionReturnTypeException, \
+    MisnomerInterpreterExceededMaximumDepthException
 from lexer.lexer import Lexer
 from parser.parser import Parser
 from utils.source_reader.source_reader import StringSourceReader
@@ -251,6 +252,22 @@ class TestParser:
 
 
 class TestParserExceptions:
+    def test_recursion_limit(self):
+        code = """
+        bar() returns nothing {return;}
+        foo() returns nothing {bar();}
+        main() returns int {
+            foo();
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program, 2)
+            with pytest.raises(MisnomerInterpreterExceededMaximumDepthException):
+                interpreter.execute()
+
     def test_no_main(self):
         code = """
         foo() returns int {
