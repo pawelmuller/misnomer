@@ -24,7 +24,7 @@ class StatementBlock(Node):
 
     def execute(self, context):
         for statement in self.statements:
-            if (exit_code := statement.execute(context)) is not None:
+            if (exit_code := statement.execute(context)) is not None and context.get_return_flag():
                 return exit_code
 
     def __eq__(self, other):
@@ -190,6 +190,7 @@ class ReturnStatement(Node):
         self.value = value
 
     def execute(self, context):
+        context.set_return_flag(True)
         return self.value.execute(context) if self.value is not None else None
 
     def __eq__(self, other):

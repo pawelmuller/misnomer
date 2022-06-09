@@ -10,6 +10,7 @@ class Context:
         self._available_calls = available_calls
         if available_calls <= 0:
             raise MisnomerInterpreterExceededMaximumDepthException(recursion_limit)
+        self._return_flag = False
 
     def add_function(self, function_name, function):
         self.functions[function_name] = function
@@ -27,6 +28,12 @@ class Context:
         new_context = Context(self._recursion_limit, self._available_calls-1)
         new_context.functions = self.functions
         return new_context
+
+    def set_return_flag(self, new_value: bool):
+        self._return_flag = new_value
+
+    def get_return_flag(self):
+        return self._return_flag
 
 
 class Interpreter:
