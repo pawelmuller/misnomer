@@ -9,7 +9,8 @@ from interpreter.interpreter_exceptions import MisnomerInterpreterNoMainFunction
     MisnomerInterpreterFunctionDoesNotExistException, MisnomerInterpreterVariableDoesNotExistException, \
     MisnomerInterpreterBadOperandTypeException, MisnomerInterpreterCastingException, \
     MisnomerInterpreterVariableAssignmentTypeException, MisnomerInterpreterFunctionReturnTypeException, \
-    MisnomerInterpreterExceededMaximumDepthException, MisnomerInterpreterZeroDivisionException
+    MisnomerInterpreterExceededMaximumDepthException, MisnomerInterpreterZeroDivisionException, \
+    MisnomerInterpreterFunctionCallParameterTypeException
 from lexer.lexer import Lexer
 from parser.parser import Parser
 from utils.source_reader.source_reader import StringSourceReader
@@ -20,7 +21,7 @@ class TestParser:
         test_cases = ((8, 21), (13, 233), (15, 610), (18, 2584), (20, 6765))
         for n, correct_result in test_cases:
             code = """
-                    fibonacci(n: int) returns int {
+            fibonacci(n: int) returns int {
                 if (n <= 1) { return n; }
                 else {
                     var a: int = fibonacci(n-1);
@@ -557,4 +558,21 @@ class TestParserExceptions:
             program = parser.parse_program()
             interpreter = Interpreter(program)
             with pytest.raises(MisnomerInterpreterZeroDivisionException):
+                interpreter.execute()
+
+    def test_wrong_argument_type(self):
+        code = """
+        foo(a: int) returns nothing {
+            a = 1;
+        }
+        main() returns int {
+            return foo("string");
+        }
+        """
+        with StringSourceReader(code) as source:
+            lexer = Lexer(source)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            interpreter = Interpreter(program)
+            with pytest.raises(MisnomerInterpreterFunctionCallParameterTypeException):
                 interpreter.execute()

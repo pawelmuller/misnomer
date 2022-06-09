@@ -109,7 +109,7 @@ class MultiplicativeExpression(Expression):
             raise MisnomerInterpreterBadOperandTypeException("*", self.expressions, self.expressions.position)
 
 
-class BaseMathematicalExpression(Expression):
+class UnaryExpression(Expression):
     def __init__(self, expressions, position: Position):
         super().__init__(expressions, position)
 

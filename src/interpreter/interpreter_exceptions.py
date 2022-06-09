@@ -97,3 +97,11 @@ class MisnomerInterpreterFunctionReturnTypeException(MisnomerInterpreterExceptio
         message = f"Cannot return value of type {value_type} from function '{function_name}'" \
                   f"that returns {return_type}.\n"
         super(MisnomerInterpreterFunctionReturnTypeException, self).__init__(position, message, give_position=True)
+
+
+class MisnomerInterpreterFunctionCallParameterTypeException(MisnomerInterpreterException):
+    def __init__(self, argument_type: type, parameter_type: type, parameter_name: str, position: Position):
+        message = f"Cannot assign argument of type {argument_type} to parameter '{parameter_name}' " \
+                  f"of type {parameter_type}.\n"
+        super(MisnomerInterpreterFunctionCallParameterTypeException, self).__init__(position, message,
+                                                                                    give_position=True)
