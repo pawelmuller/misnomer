@@ -3,7 +3,8 @@ from interpreter.interpreter_exceptions import MisnomerInterpreterVariableAlread
     MisnomerInterpreterArgumentsNumberDoesNotMatchException, MisnomerInterpreterFunctionDoesNotExistException, \
     MisnomerInterpreterVariableDoesNotExistException, MisnomerInterpreterCastingException, \
     MisnomerInterpreterCastingBuiltinException, MisnomerInterpreterVariableAssignmentTypeException, \
-    MisnomerInterpreterFunctionReturnTypeException
+    MisnomerInterpreterFunctionReturnTypeException, MisnomerInterpreterFunctionCallParameterTypeException
+from parser.parser_exceptions import MisnomerParserFunctionParameterNameDuplicateException
 from parser.syntax_tree.syntax_tree import Node
 from parser.types import Type
 from utils.position import Position
@@ -24,7 +25,7 @@ class StatementBlock(Node):
 
     def execute(self, context):
         for statement in self.statements:
-            if (exit_code := statement.execute(context)) is not None:
+            if (exit_code := statement.execute(context)) is not None and context.get_return_flag():
                 return exit_code
 
     def __eq__(self, other):
@@ -50,23 +51,30 @@ class FunctionParameter(Node):
 
 
 class FunctionDefinition(Node):
-    def __init__(self, name: str, arguments: [FunctionParameter], return_type: Type, statement_block: StatementBlock,
-                 position: Position):
+    def __init__(self, name: str, parameters: dict[str, FunctionParameter], return_type: Type,
+                 statement_block: StatementBlock, position: Position):
         super().__init__(position)
         self.name = name
-        self.arguments = arguments
+        self.parameters = {}
         self.return_type = return_type
         self.statement_block = statement_block
+        self.add_function_parameters(parameters)
 
     def get_name(self):
         return self.name
 
-    def check_if_value_matches_type(self, result):
-        value_type = type(result)
-        if correct_types := misnomer_types_to_python_types.get(self.return_type):
+    def add_function_parameters(self, parameters: dict[str, FunctionParameter]):
+        for parameter_name, parameter in parameters.items():
+            if parameter_name in self.parameters:
+                raise MisnomerParserFunctionParameterNameDuplicateException(parameter_name,
+                                                                            parameter.get_position())
+            self.parameters[parameter_name] = parameter
+
+    def check_if_value_matches_type(self, name, value, type_to_check, exception):
+        value_type = type(value)
+        if correct_types := misnomer_types_to_python_types.get(type_to_check):
             if value_type not in correct_types:
-                raise MisnomerInterpreterFunctionReturnTypeException(value_type, self.return_type.name,
-                                                                     self.name, self.position)
+                raise exception(value_type, type_to_check.name, name, self.position)
 
     def execute(self, context):
         if self.name in context.functions:
@@ -74,20 +82,26 @@ class FunctionDefinition(Node):
         context.add_function(self.name, self)
 
     def __call__(self, context, *call_arguments_values):
-        if (got_arguments_number := len(call_arguments_values)) != (expected_arguments_number := len(self.arguments)):
+        if (got_arguments_number := len(call_arguments_values)) != (expected_arguments_number := len(self.parameters)):
             raise MisnomerInterpreterArgumentsNumberDoesNotMatchException(expected_arguments_number,
                                                                           got_arguments_number,
                                                                           self.name, self.position)
-        new_context = context.get_context_copy()
-        for argument_name, argument_value in zip(self.arguments, call_arguments_values):
-            new_context.add_variable(argument_name, argument_value)
+
+        new_context = context.get_new_context()
+        for argument_name, argument_value in zip(self.parameters, call_arguments_values):
+            self.check_if_value_matches_type(argument_name, argument_value,
+                                             self.parameters[argument_name].argument_type,
+                                             MisnomerInterpreterFunctionCallParameterTypeException)
+            new_context.set_variable(argument_name, argument_value)
+
         result = self.statement_block.execute(new_context)
-        self.check_if_value_matches_type(result)
+        self.check_if_value_matches_type(self.name, result, self.return_type,
+                                         MisnomerInterpreterFunctionReturnTypeException)
         return result
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)
-        attributes_eq_1 = self.name == other.name and self.arguments == other.arguments
+        attributes_eq_1 = self.name == other.name and self.parameters == other.parameters
         attributes_eq_2 = self.return_type == other.return_type and self.statement_block == other.statement_block
         return super_eq and attributes_eq_1 and attributes_eq_2
 
@@ -99,9 +113,8 @@ class FunctionCall(Node):
         self.arguments = arguments
 
     def execute(self, context):
-        arguments = [argument.execute(context) for argument in self.arguments]
-
         if function := context.get_function(self.identifier):
+            arguments = [argument.execute(context) for argument in self.arguments]
             if isinstance(function, FunctionDefinition):
                 arguments = [context] + arguments
             try:
@@ -190,6 +203,7 @@ class ReturnStatement(Node):
         self.value = value
 
     def execute(self, context):
+        context.set_return_flag(True)
         return self.value.execute(context) if self.value is not None else None
 
     def __eq__(self, other):
@@ -216,7 +230,7 @@ class VariableInitialisationStatement(Statement):
             raise MisnomerInterpreterVariableAlreadyExistsException(self.name, self.position)
         result = self.value.execute(context)
         self.check_if_value_matches_type(result)
-        context.add_variable(self.name, result)
+        context.set_variable(self.name, result)
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)
@@ -237,9 +251,10 @@ class AssignmentStatement(Statement):
         result = self.value.execute(context)
         variable_type = type(context.get_variable(self.name))
         if type(result) == variable_type:
-            context.add_variable(self.name, result)
+            context.set_variable(self.name, result)
         else:
-            raise MisnomerInterpreterVariableAssignmentTypeException(type(result), variable_type, self.name, self.position)
+            raise MisnomerInterpreterVariableAssignmentTypeException(type(result), variable_type, self.name,
+                                                                     self.position)
 
     def __eq__(self, other):
         super_eq = super().__eq__(other)

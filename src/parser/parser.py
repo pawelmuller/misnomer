@@ -65,7 +65,7 @@ class Parser:
             return FunctionDefinition(function_name, function_parameters, TYPES.get(return_type.get_type()),
                                       statement_block, token.get_position())
 
-    def parse_parameters(self) -> [FunctionParameter]:
+    def parse_parameters(self) -> dict[str, FunctionParameter]:
         parameters: dict[str, FunctionParameter] = {}
 
         if first_parameter := self.parse_parameter(strict=False):
