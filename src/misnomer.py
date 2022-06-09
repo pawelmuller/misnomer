@@ -24,10 +24,10 @@ def main():
             lexer = Lexer(source, args.max_string_length)
             parser = Parser(lexer)
             program = parser.parse_program()
-            interpreter = Interpreter(program, args.recursion_limit)
-            exit_code = interpreter.execute()
-            print(f"The program finished with exit code: {exit_code}.")
-            return exit_code
+        interpreter = Interpreter(program, args.recursion_limit)
+        exit_code = interpreter.execute()
+        print(f"The program finished with exit code: {exit_code}.")
+        return exit_code
     except MisnomerException as error:
         print(error)
 
