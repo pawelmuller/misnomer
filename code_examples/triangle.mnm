@@ -9,12 +9,14 @@ check_pythagoras(a: int, b: int, c: int) returns nothing {
 }
 
 what_triangle(a: int, b: int, c: int) returns nothing {
-    if (a + b > c) {
-        check_pythagoras(a, b, c);
-    } else if (a + c > b) {
-        check_pythagoras(a, c, b);
-    } else if (b + c > a) {
-        check_pythagoras(b, c, a);
+    if (a + b > c and a + c > b and c + b > a) {
+        if (a + b > c) {
+            check_pythagoras(a, b, c);
+        } else if (a + c > b) {
+            check_pythagoras(a, c, b);
+        } else if (b + c > a) {
+            check_pythagoras(b, c, a);
+        }
     } else {
         print("A triangle with given arm lengths cannot be constructed.");
     }
@@ -32,7 +34,9 @@ main() returns int {
         c = to_int(input("c: "));
     }
     what_triangle(a, b, c);
-    what_triangle(1.7, 10, 10000);
+
+
+    what_triangle(17, 10, 10000);
 
     return 0;
 }
